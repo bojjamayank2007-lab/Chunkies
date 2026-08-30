@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout — CHUNKIES</title>
+    <meta name="description" content="Complete your order at CHUNKIES.">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/menu.css">
+    <link rel="stylesheet" href="css/footer.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="index.html">CHUNKIES</a>
+                <span class="nav-brand-hindi">चुंकीज़</span>
+            </div>
+            
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="index.html" class="nav-link">HOME</a></li>
+                <li><a href="menu.html" class="nav-link">MENU</a></li>
+                <li><a href="about.html" class="nav-link">ABOUT</a></li>
+                <li><a href="index.html#reviews" class="nav-link">REVIEWS</a></li>
+                <li><a href="contact.html" class="nav-link">CONTACT</a></li>
+            </ul>
+            
+            <div class="nav-actions">
+                <a href="menu.html" class="btn btn-primary">ORDER NOW</a>
+                <button class="cart-btn" id="cartBtn">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count" id="cartCount">0</span>
+                </button>
+                <button class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Cart Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1>CHECKOUT</h1>
+            <p>Complete your order</p>
+        </div>
+    </section>
+
+    <!-- Checkout Section -->
+    <section class="checkout-section">
+        <div class="container">
+            <div class="checkout-grid">
+                <!-- Order Summary -->
+                <div class="order-summary">
+                    <h2>Your Order</h2>
+                    <div class="cart-items" id="checkoutCartItems">
+                        <p class="empty-cart">Your cart is empty</p>
+                    </div>
+                    
+                    <div class="order-totals">
+                        <div class="total-row">
+                            <span>Subtotal</span>
+                            <span id="checkoutSubtotal">₹0</span>
+                        </div>
+                        <div class="total-row">
+                            <span>Tax (5%)</span>
+                            <span id="checkoutTax">₹0</span>
+                        </div>
+                        <div class="total-row total">
+                            <span>Total</span>
+                            <span id="checkoutTotal">₹0</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Checkout Form -->
+                <div class="checkout-form">
+                    <h2>Delivery Details</h2>
+                    <form id="checkoutForm">
+                        <div class="form-group">
+                            <label for="customerName">Full Name *</label>
+                            <input type="text" id="customerName" name="customerName" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="phone">Mobile Number *</label>
+                            <input type="tel" id="phone" name="phone" required pattern="[0-9]{10}">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="orderType">Order Type *</label>
+                            <select id="orderType" name="orderType" required>
+                                <option value="">Select order type</option>
+                                <option value="Delivery">Delivery</option>
+                                <option value="Takeaway">Takeaway</option>
+                                <option value="Dine-in">Dine-in</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group" id="addressGroup" style="display: none;">
+                            <label for="address">Delivery Address *</label>
+                            <textarea id="address" name="address" rows="3"></textarea>
+                        </div>
+                        
+                        <div class="form-group" id="tableGroup" style="display: none;">
+                            <label for="tableNumber">Table Number *</label>
+                            <input type="text" id="tableNumber" name="tableNumber">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="notes">Special Instructions</label>
+                            <textarea id="notes" name="notes" rows="2" placeholder="Any special requests?"></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-block btn-lg">PLACE ORDER</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Order Success Modal -->
+    <div class="modal" id="successModal">
+        <div class="modal-content">
+            <div class="modal-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h2>ORDER PLACED SUCCESSFULLY!</h2>
+            <p>Your order has been received.</p>
+            <p class="order-id">Order ID: <span id="successOrderId"></span></p>
+            <p class="order-message">We'll prepare your order right away!</p>
+            <a href="index.html" class="btn btn-primary">BACK TO HOME</a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>CHUNKIES</h3>
+                    <p class="footer-hindi">चुंकीज़</p>
+                    <p>Big flavour. Big chunkies.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="menu.html">Menu</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p><i class="fas fa-map-marker-alt"></i> Jogeshwari West, Mumbai</p>
+                    <p><i class="fas fa-phone"></i> 090040 94979</p>
+                    <p><i class="fas fa-clock"></i> Open 24 Hours</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Services</h4>
+                    <p>Dine-in</p>
+                    <p>Takeaway</p>
+                    <p>Delivery</p>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 CHUNKIES. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Mobile Sticky Buttons -->
+    <div class="mobile-sticky">
+        <a href="tel:09004094979" class="mobile-call">
+            <i class="fas fa-phone"></i>
+            <span>CALL</span>
+        </a>
+        <a href="menu.html" class="mobile-order">
+            <i class="fas fa-shopping-bag"></i>
+            <span>ORDER</span>
+        </a>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="js/api.js"></script>
+    <script src="js/navbar.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/contact.js"></script>
+</body>
+</html>
