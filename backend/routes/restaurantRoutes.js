@@ -5,8 +5,12 @@ const {
   updateRestaurantInfo
 } = require('../controllers/restaurantController');
 
-router.route('/')
-  .get(getRestaurantInfo)
-  .put(updateRestaurantInfo);
+const { protect } = require('../middleware/authMiddleware');
+
+// Public: customers can view restaurant info
+router.get('/', getRestaurantInfo);
+
+// Admin only: update restaurant info
+router.put('/', protect, updateRestaurantInfo);
 
 module.exports = router;

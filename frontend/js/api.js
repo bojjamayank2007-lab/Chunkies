@@ -7,13 +7,13 @@ const api = {
     getMenu: async (params = {}) => {
         const queryString = new URLSearchParams(params).toString();
         const url = queryString ? `${API_BASE_URL}/menu?${queryString}` : `${API_BASE_URL}/menu`;
-        const response = await fetch(url);
+        const response = await fetch(url, { credentials: 'include' });
         if (!response.ok) throw new Error('Failed to fetch menu');
         return response.json();
     },
 
     getMenuItemById: async (id) => {
-        const response = await fetch(`${API_BASE_URL}/menu/${id}`);
+        const response = await fetch(`${API_BASE_URL}/menu/${id}`, { credentials: 'include' });
         if (!response.ok) throw new Error('Failed to fetch menu item');
         return response.json();
     },
@@ -22,6 +22,7 @@ const api = {
         const response = await fetch(`${API_BASE_URL}/menu`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify(data)
         });
         if (!response.ok) throw new Error('Failed to create menu item');
@@ -32,6 +33,7 @@ const api = {
         const response = await fetch(`${API_BASE_URL}/menu/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify(data)
         });
         if (!response.ok) throw new Error('Failed to update menu item');
@@ -40,7 +42,8 @@ const api = {
 
     deleteMenuItem: async (id) => {
         const response = await fetch(`${API_BASE_URL}/menu/${id}`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            credentials: 'include'
         });
         if (!response.ok) throw new Error('Failed to delete menu item');
         return response.json();
@@ -48,13 +51,13 @@ const api = {
 
     // Orders
     getOrders: async () => {
-        const response = await fetch(`${API_BASE_URL}/orders`);
+        const response = await fetch(`${API_BASE_URL}/orders`, { credentials: 'include' });
         if (!response.ok) throw new Error('Failed to fetch orders');
         return response.json();
     },
 
     getOrderById: async (id) => {
-        const response = await fetch(`${API_BASE_URL}/orders/${id}`);
+        const response = await fetch(`${API_BASE_URL}/orders/${id}`, { credentials: 'include' });
         if (!response.ok) throw new Error('Failed to fetch order');
         return response.json();
     },
@@ -65,6 +68,7 @@ const api = {
         const response = await fetch(`${API_BASE_URL}/orders`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify(data)
         });
 
@@ -90,6 +94,7 @@ const api = {
         const response = await fetch(`${API_BASE_URL}/orders/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify(data)
         });
         if (!response.ok) throw new Error('Failed to update order');
@@ -98,7 +103,8 @@ const api = {
 
     deleteOrder: async (id) => {
         const response = await fetch(`${API_BASE_URL}/orders/${id}`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            credentials: 'include'
         });
         if (!response.ok) throw new Error('Failed to delete order');
         return response.json();
@@ -106,7 +112,7 @@ const api = {
 
     // Reviews
     getReviews: async () => {
-        const response = await fetch(`${API_BASE_URL}/reviews`);
+        const response = await fetch(`${API_BASE_URL}/reviews`, { credentials: 'include' });
         if (!response.ok) throw new Error('Failed to fetch reviews');
         return response.json();
     },
@@ -115,6 +121,7 @@ const api = {
         const response = await fetch(`${API_BASE_URL}/reviews`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify(data)
         });
         if (!response.ok) throw new Error('Failed to create review');
@@ -123,7 +130,8 @@ const api = {
 
     deleteReview: async (id) => {
         const response = await fetch(`${API_BASE_URL}/reviews/${id}`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            credentials: 'include'
         });
         if (!response.ok) throw new Error('Failed to delete review');
         return response.json();
@@ -131,7 +139,7 @@ const api = {
 
     // Restaurant
     getRestaurant: async () => {
-        const response = await fetch(`${API_BASE_URL}/restaurant`);
+        const response = await fetch(`${API_BASE_URL}/restaurant`, { credentials: 'include' });
         if (!response.ok) throw new Error('Failed to fetch restaurant info');
         return response.json();
     },
@@ -140,6 +148,7 @@ const api = {
         const response = await fetch(`${API_BASE_URL}/restaurant`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify(data)
         });
         if (!response.ok) throw new Error('Failed to update restaurant info');

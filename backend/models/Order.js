@@ -1,5 +1,13 @@
 const mongoose = require('mongoose');
 
+// Counter collection for atomic order ID generation
+const CounterSchema = new mongoose.Schema({
+  name: { type: String, required: true, unique: true },
+  sequence: { type: Number, required: true }
+});
+
+const Counter = mongoose.model('Counter', CounterSchema);
+
 const orderSchema = new mongoose.Schema({
   orderId: {
     type: String,
@@ -34,7 +42,12 @@ const orderSchema = new mongoose.Schema({
     quantity: {
       type: Number,
       required: true,
-      min: 1
+      min: 1,
+      max: 50,
+      validate: {
+        validator: Number.isInteger,
+        message: 'Quantity must be a whole number'
+      }
     }
   }],
   orderType: {
@@ -74,11 +87,32 @@ const orderSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Generate order ID before validation
-orderSchema.pre('validate', async function(next) {
+// Generate order ID before validation using atomic counter
+orderSchema.pre('validate', async function (next) {
   if (!this.orderId) {
-    const count = await this.constructor.countDocuments();
-    this.orderId = `ORD${String(count + 1).padStart(6, '0')}`;
+    try {
+      // Always get the current max order number to ensure counter is correct
+      const lastOrder = await this.constructor.findOne({}, {}, { sort: { createdAt: -1 } });
+      const lastSequence = lastOrder ? parseInt(lastOrder.orderId.replace('ORD', '')) || 0 : 0;
+
+      // Set counter to current max if it's behind, or increment if it's ahead
+      const sequence = await Counter.findOneAndUpdate(
+        { name: 'orderId' },
+        { $max: { sequence: lastSequence } },
+        { new: true, upsert: true }
+      );
+
+      // Now increment to get the next unique ID
+      const nextSequence = await Counter.findOneAndUpdate(
+        { name: 'orderId' },
+        { $inc: { sequence: 1 } },
+        { new: true }
+      );
+
+      this.orderId = `ORD${String(nextSequence.sequence).padStart(6, '0')}`;
+    } catch (error) {
+      return next(error);
+    }
   }
   next();
 });

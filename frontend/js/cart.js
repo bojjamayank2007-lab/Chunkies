@@ -1,11 +1,42 @@
 // Cart functionality
-let cart = JSON.parse(localStorage.getItem('chunkiesCart')) || [];
+let cart = [];
 let savedScrollY = 0;
+
+// Safe localStorage load with corruption protection
+function loadCart() {
+    try {
+        const savedCart = localStorage.getItem('chunkiesCart');
+        if (savedCart) {
+            const parsedCart = JSON.parse(savedCart);
+            // Validate cart structure
+            if (Array.isArray(parsedCart)) {
+                cart = parsedCart.filter(item => 
+                    item && 
+                    typeof item.id === 'string' &&
+                    typeof item.name === 'string' &&
+                    typeof item.price === 'number' &&
+                    typeof item.quantity === 'number' &&
+                    item.quantity > 0
+                );
+            } else {
+                cart = [];
+            }
+        }
+    } catch (error) {
+        console.error('Cart data corrupted, resetting:', error);
+        cart = [];
+        localStorage.removeItem('chunkiesCart');
+    }
+}
 
 // Save cart to localStorage
 function saveCart() {
-    localStorage.setItem('chunkiesCart', JSON.stringify(cart));
-    updateCartCount();
+    try {
+        localStorage.setItem('chunkiesCart', JSON.stringify(cart));
+        updateCartCount();
+    } catch (error) {
+        console.error('Failed to save cart:', error);
+    }
 }
 
 // Update cart count
@@ -58,10 +89,12 @@ function clearCart() {
 function updateQuantity(id, change) {
     const item = cart.find(item => item.id === id);
     if (item) {
-        item.quantity += change;
-        if (item.quantity <= 0) {
+        const newQuantity = item.quantity + change;
+        // Prevent negative quantities
+        if (newQuantity <= 0) {
             removeFromCart(id);
         } else {
+            item.quantity = newQuantity;
             saveCart();
             renderCart();
         }
@@ -133,6 +166,9 @@ function renderCart() {
     if (checkoutTotal) {
         checkoutTotal.textContent = `₹${finalTotal}`;
     }
+
+    // Update checkout button state
+    updateCheckoutButton();
 }
 
 // Lock page scroll
@@ -256,9 +292,79 @@ function showNotification(message) {
     }, 3000);
 }
 
+// Update checkout button state
+function updateCheckoutButton() {
+    const checkoutBtn = document.querySelector('#checkoutForm button[type="submit"]');
+    const checkoutLinks = document.querySelectorAll('a[href="cart.html"]');
+    const isEmpty = cart.length === 0;
+
+    if (checkoutBtn) {
+        checkoutBtn.disabled = isEmpty;
+        checkoutBtn.style.opacity = isEmpty ? '0.5' : '1';
+        checkoutBtn.style.cursor = isEmpty ? 'not-allowed' : 'pointer';
+    }
+
+    checkoutLinks.forEach(link => {
+        if (isEmpty) {
+            link.style.pointerEvents = 'none';
+            link.style.opacity = '0.5';
+        } else {
+            link.style.pointerEvents = '';
+            link.style.opacity = '';
+        }
+    });
+}
+
+// Checkout form submission
+function setupCheckoutForm() {
+    const checkoutForm = document.getElementById('checkoutForm');
+    if (!checkoutForm) return;
+
+    checkoutForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        if (cart.length === 0) {
+            alert('Your cart is empty. Please add items before checkout.');
+            return;
+        }
+
+        const formData = new FormData(checkoutForm);
+        const orderData = {
+            customerName: formData.get('customerName'),
+            phone: formData.get('phone'),
+            email: formData.get('email') || '',
+            items: cart.map(item => ({
+                menuItem: item.id,
+                name: item.name,
+                quantity: item.quantity
+            })),
+            orderType: formData.get('orderType'),
+            address: formData.get('orderType') === 'Delivery' ? formData.get('address') : undefined,
+            tableNumber: formData.get('orderType') === 'Dine-in' ? formData.get('tableNumber') : undefined,
+            notes: formData.get('notes') || ''
+        };
+
+        try {
+            const response = await api.createOrder(orderData);
+            
+            // Show success modal
+            document.getElementById('successOrderId').textContent = response.orderId || 'N/A';
+            document.getElementById('successModal').classList.add('active');
+            
+            // Clear cart after successful order
+            clearCart();
+            checkoutForm.reset();
+        } catch (error) {
+            alert('Failed to place order: ' + error.message);
+        }
+    });
+}
+
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
+    loadCart();
     updateCartCount();
     renderCart();
     setupCartDrawer();
+    setupCheckoutForm();
 });

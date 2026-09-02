@@ -1,16 +1,19 @@
 const express = require('express');
 const router = express.Router();
+
 const {
   getReviews,
   createReview,
   deleteReview
 } = require('../controllers/reviewController');
 
-router.route('/')
-  .get(getReviews)
-  .post(createReview);
+const { protect } = require('../middleware/authMiddleware');
 
-router.route('/:id')
-  .delete(deleteReview);
+// Public
+router.get('/', getReviews);
+router.post('/', createReview);
+
+// Admin only
+router.delete('/:id', protect, deleteReview);
 
 module.exports = router;

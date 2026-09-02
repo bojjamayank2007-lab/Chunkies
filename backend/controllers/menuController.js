@@ -1,4 +1,5 @@
 const MenuItem = require('../models/MenuItem');
+const mongoose = require('mongoose');
 
 // @desc    Get all menu items
 // @route   GET /api/menu
@@ -39,9 +40,11 @@ const getMenuItems = async (req, res) => {
 // @desc    Get single menu item
 // @route   GET /api/menu/:id
 // @access  Public
-const getMenuItemById = async (req, res) => {
+const getMenuItemById = async (req, res, next) => {
   try {
-    const menuItem = await MenuItem.findById(req.params.id);
+    const { id } = req.params;
+
+    const menuItem = await MenuItem.findById(id);
     
     if (!menuItem) {
       return res.status(404).json({ message: 'Menu item not found' });
@@ -49,16 +52,49 @@ const getMenuItemById = async (req, res) => {
     
     res.json(menuItem);
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+    next(error);
   }
 };
 
 // @desc    Create menu item
 // @route   POST /api/menu
-// @access  Public (for demo - should be protected in production)
+// @access  Admin only
 const createMenuItem = async (req, res) => {
   try {
-    const menuItem = await MenuItem.create(req.body);
+    const { name, description, price, category, image, isVeg, isFeatured, isAvailable } = req.body;
+
+    // Validation
+    if (!name || name.trim() === '') {
+      return res.status(400).json({ message: 'Name is required' });
+    }
+
+    if (!description || description.trim() === '') {
+      return res.status(400).json({ message: 'Description is required' });
+    }
+
+    if (!price || typeof price !== 'number' || price <= 0) {
+      return res.status(400).json({ message: 'Price must be a positive number' });
+    }
+
+    if (!category) {
+      return res.status(400).json({ message: 'Category is required' });
+    }
+
+    const validCategories = ['Burgers', 'Chicken', 'Wraps', 'Sides', 'Combos', 'Drinks'];
+    if (!validCategories.includes(category)) {
+      return res.status(400).json({ message: 'Invalid category' });
+    }
+
+    const menuItem = await MenuItem.create({
+      name: name.trim(),
+      description: description.trim(),
+      price,
+      category,
+      image: image || '',
+      isVeg: isVeg || false,
+      isFeatured: isFeatured || false,
+      isAvailable: isAvailable !== undefined ? isAvailable : true
+    });
     res.status(201).json(menuItem);
   } catch (error) {
     res.status(400).json({ message: 'Invalid menu item data', error: error.message });
@@ -67,18 +103,55 @@ const createMenuItem = async (req, res) => {
 
 // @desc    Update menu item
 // @route   PUT /api/menu/:id
-// @access  Public (for demo - should be protected in production)
+// @access  Admin only
 const updateMenuItem = async (req, res) => {
   try {
-    const menuItem = await MenuItem.findById(req.params.id);
+    const { id } = req.params;
+
+    // ObjectId validation
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid menu item ID' });
+    }
+
+    const menuItem = await MenuItem.findById(id);
     
     if (!menuItem) {
       return res.status(404).json({ message: 'Menu item not found' });
     }
-    
-    Object.assign(menuItem, req.body);
+
+    const { name, description, price, category, image, isVeg, isFeatured, isAvailable } = req.body;
+
+    // Validation for provided fields
+    if (name !== undefined && name.trim() === '') {
+      return res.status(400).json({ message: 'Name cannot be empty' });
+    }
+
+    if (description !== undefined && description.trim() === '') {
+      return res.status(400).json({ message: 'Description cannot be empty' });
+    }
+
+    if (price !== undefined && (typeof price !== 'number' || price <= 0)) {
+      return res.status(400).json({ message: 'Price must be a positive number' });
+    }
+
+    if (category !== undefined) {
+      const validCategories = ['Burgers', 'Chicken', 'Wraps', 'Sides', 'Combos', 'Drinks'];
+      if (!validCategories.includes(category)) {
+        return res.status(400).json({ message: 'Invalid category' });
+      }
+    }
+
+    // Update only provided fields
+    if (name !== undefined) menuItem.name = name.trim();
+    if (description !== undefined) menuItem.description = description.trim();
+    if (price !== undefined) menuItem.price = price;
+    if (category !== undefined) menuItem.category = category;
+    if (image !== undefined) menuItem.image = image;
+    if (isVeg !== undefined) menuItem.isVeg = isVeg;
+    if (isFeatured !== undefined) menuItem.isFeatured = isFeatured;
+    if (isAvailable !== undefined) menuItem.isAvailable = isAvailable;
+
     await menuItem.save();
-    
     res.json(menuItem);
   } catch (error) {
     res.status(400).json({ message: 'Invalid menu item data', error: error.message });
@@ -87,10 +160,17 @@ const updateMenuItem = async (req, res) => {
 
 // @desc    Delete menu item
 // @route   DELETE /api/menu/:id
-// @access  Public (for demo - should be protected in production)
+// @access  Admin only
 const deleteMenuItem = async (req, res) => {
   try {
-    const menuItem = await MenuItem.findById(req.params.id);
+    const { id } = req.params;
+
+    // ObjectId validation
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid menu item ID' });
+    }
+
+    const menuItem = await MenuItem.findById(id);
     
     if (!menuItem) {
       return res.status(404).json({ message: 'Menu item not found' });
