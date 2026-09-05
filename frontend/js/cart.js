@@ -50,6 +50,13 @@ function updateCartCount() {
 
 // Add to cart
 function addToCart(id, name, price) {
+    if (!window.isCustomerLoggedIn) {
+        if (typeof promptLoginForCart === 'function') {
+            promptLoginForCart();
+        }
+        return;
+    }
+
     const existingItem = cart.find(item => item.id === id);
     
     if (existingItem) {
@@ -181,7 +188,6 @@ function lockPageScroll() {
     document.body.style.width = '100%';
     document.body.style.overflow = 'hidden';
     document.documentElement.style.overflow = 'hidden';
-    console.log('Cart opened — page scroll locked');
 }
 
 // Unlock page scroll
@@ -194,7 +200,6 @@ function unlockPageScroll() {
     document.body.style.overflow = '';
     document.documentElement.style.overflow = '';
     window.scrollTo(0, savedScrollY);
-    console.log('Cart closed — page scroll unlocked');
 }
 
 // Prevent background wheel events when cart is open
@@ -221,11 +226,17 @@ function setupCartDrawer() {
     if (!cartBtn || !cartDrawer) return;
 
     cartBtn.addEventListener('click', () => {
+        if (!window.isCustomerLoggedIn) {
+            if (typeof promptLoginForCart === 'function') {
+                promptLoginForCart();
+            }
+            return;
+        }
+
         cartDrawer.classList.add('active');
         cartOverlay.classList.add('active');
         lockPageScroll();
         document.addEventListener('wheel', preventBackgroundWheel, { passive: false });
-        console.log('Cart opened');
     });
 
     function closeCart() {
@@ -233,7 +244,6 @@ function setupCartDrawer() {
         cartOverlay.classList.remove('active');
         unlockPageScroll();
         document.removeEventListener('wheel', preventBackgroundWheel);
-        console.log('Cart closed');
     }
 
     if (cartClose) {
@@ -255,7 +265,6 @@ function setupCartDrawer() {
     document.addEventListener('click', (event) => {
         const checkoutLink = event.target.closest('a[href="cart.html"]');
         if (checkoutLink) {
-            console.log('Proceed to checkout clicked');
             
             // Check if cart is empty
             if (cart.length === 0) {
@@ -265,7 +274,6 @@ function setupCartDrawer() {
             }
             
             // Cart is not empty, allow navigation
-            console.log('Navigating to checkout with', cart.length, 'items');
         }
     });
 }
@@ -275,7 +283,7 @@ function showNotification(message) {
     const notification = document.createElement('div');
     notification.style.cssText = `
         position: fixed;
-        bottom: 100px;
+        bottom: 80px;
         right: 20px;
         background-color: var(--success-color);
         color: white;
@@ -341,19 +349,57 @@ function setupCheckoutForm() {
             orderType: formData.get('orderType'),
             address: formData.get('orderType') === 'Delivery' ? formData.get('address') : undefined,
             tableNumber: formData.get('orderType') === 'Dine-in' ? formData.get('tableNumber') : undefined,
+            paymentMethod: formData.get('paymentMethod'),
             notes: formData.get('notes') || ''
         };
 
         try {
             const response = await api.createOrder(orderData);
-            
-            // Show success modal
-            document.getElementById('successOrderId').textContent = response.orderId || 'N/A';
-            document.getElementById('successModal').classList.add('active');
-            
-            // Clear cart after successful order
-            clearCart();
-            checkoutForm.reset();
+
+            if (orderData.paymentMethod === 'COD') {
+                document.getElementById('successOrderId').textContent = response.orderId || 'N/A';
+                document.getElementById('successPaymentStatus').textContent = 'Pending — Cash on Delivery';
+                document.getElementById('successModal').classList.add('active');
+                clearCart();
+                checkoutForm.reset();
+                return;
+            }
+
+            if (orderData.paymentMethod !== 'Online' || !response.razorpayOrderId || !window.Razorpay) {
+                throw new Error('Payment service is unavailable. Please try again.');
+            }
+
+            const razorpayCheckout = new Razorpay({
+                key: response.keyId,
+                amount: response.total * 100,
+                currency: 'INR',
+                name: 'CHUNKIES',
+                description: `Order ${response.orderId}`,
+                order_id: response.razorpayOrderId,
+                handler: async (paymentResponse) => {
+                    try {
+                        await api.verifyPayment({
+                            orderId: response._id,
+                            paymentId: paymentResponse.razorpay_payment_id,
+                            razorpayOrderId: paymentResponse.razorpay_order_id,
+                            signature: paymentResponse.razorpay_signature
+                        });
+
+                        document.getElementById('successOrderId').textContent = response.orderId || 'N/A';
+                        document.getElementById('successPaymentStatus').textContent = 'Paid';
+                        document.getElementById('successModal').classList.add('active');
+                        clearCart();
+                        checkoutForm.reset();
+                    } catch (error) {
+                        alert('Payment verification failed: ' + error.message);
+                    }
+                }
+            });
+
+            razorpayCheckout.on('payment.failed', (payment) => {
+                alert('Payment failed: ' + payment.error.description);
+            });
+            razorpayCheckout.open();
         } catch (error) {
             alert('Failed to place order: ' + error.message);
         }

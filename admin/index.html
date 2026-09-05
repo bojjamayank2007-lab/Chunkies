@@ -1,25 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard — CHUNKIES</title>
-    
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    
+
     <!-- CSS -->
     <link rel="stylesheet" href="css/admin.css">
 </head>
+
 <body>
-    <div class="admin-container">
+    <div class="login-screen" id="loginScreen" style="display: none;">
+        <div class="login-card">
+            <div class="login-logo">
+                <h1>CHUNKIES</h1>
+                <p>Admin Dashboard</p>
+            </div>
+
+            <form id="loginForm">
+                <div class="login-field">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" placeholder="Admin email" autocomplete="username" required>
+                </div>
+
+                <div class="login-field">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" placeholder="Password" autocomplete="current-password"
+                        required>
+                </div>
+
+                <p id="loginError" class="login-error"></p>
+
+                <button type="submit" id="loginButton">
+                    Login
+                </button>
+            </form>
+        </div>
+    </div>
+    <div class="admin-container" id="adminApp" style="display: none;">
+        <!-- Sidebar Overlay -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+        
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
                 <h2>CHUNKIES</h2>
                 <p>Admin Dashboard</p>
             </div>
-            
+
             <nav class="sidebar-nav">
                 <button class="nav-btn active" data-section="dashboard">
                     <i class="fas fa-tachometer-alt"></i>
@@ -42,12 +74,18 @@
                     <span>Settings</span>
                 </button>
             </nav>
+            <button id="logoutBtn" class="logout-btn" type="button">
+                Logout
+            </button>
         </aside>
 
         <!-- Main Content -->
         <main class="main-content">
             <!-- Header -->
             <header class="admin-header">
+                <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Open navigation">
+                    <i class="fas fa-bars"></i>
+                </button>
                 <h1 id="pageTitle">Dashboard</h1>
                 <a href="../frontend/index.html" class="btn btn-secondary" target="_blank">
                     <i class="fas fa-external-link-alt"></i> View Website
@@ -119,7 +157,9 @@
                                 </tr>
                             </thead>
                             <tbody id="recentOrdersTable">
-                                <tr><td colspan="6">Loading...</td></tr>
+                                <tr>
+                                    <td colspan="6">Loading...</td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -142,12 +182,15 @@
                                 <th>Type</th>
                                 <th>Amount</th>
                                 <th>Status</th>
+                                <th>Payment</th>
                                 <th>Date</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody id="ordersTable">
-                            <tr><td colspan="9">Loading...</td></tr>
+                            <tr>
+                                <td colspan="10">Loading...</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -175,7 +218,9 @@
                             </tr>
                         </thead>
                         <tbody id="menuTable">
-                            <tr><td colspan="7">Loading...</td></tr>
+                            <tr>
+                                <td colspan="7">Loading...</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -198,7 +243,9 @@
                             </tr>
                         </thead>
                         <tbody id="reviewsTable">
-                            <tr><td colspan="5">Loading...</td></tr>
+                            <tr>
+                                <td colspan="5">Loading...</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -314,4 +361,5 @@
     <script src="../frontend/js/api.js"></script>
     <script src="js/admin.js"></script>
 </body>
+
 </html>

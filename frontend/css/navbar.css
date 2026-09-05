@@ -93,6 +93,89 @@
     gap: 16px;
 }
 
+.nav-profile-action {
+    display: flex;
+    align-items: center;
+}
+
+.nav-login-btn {
+    white-space: nowrap;
+}
+
+.nav-profile-area {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+.nav-profile-icon {
+    font-size: 24px;
+    color: var(--primary-color);
+    flex-shrink: 0;
+}
+
+.customer-name {
+    color: var(--white);
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 1px;
+    white-space: nowrap;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.logout-link {
+    background: none;
+    border: 0;
+    cursor: pointer;
+    padding: 0;
+    font-family: inherit;
+    font-size: 14px;
+    text-transform: uppercase;
+    color: var(--text-light);
+    transition: var(--transition);
+}
+
+.logout-link:hover {
+    color: var(--primary-color);
+}
+
+.modal-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: none;
+    border: none;
+    color: var(--text-light);
+    font-size: 20px;
+    cursor: pointer;
+    transition: var(--transition);
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.modal-close:hover {
+    color: var(--white);
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.login-required-modal-content {
+    position: relative;
+}
+
+.login-required-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 24px;
+}
+
 .cart-btn {
     position: relative;
     background: none;
@@ -159,10 +242,10 @@
     top: 0;
     right: -400px;
     width: 400px;
-    height: 100dvh;
     height: 100vh;
-    max-height: 100dvh;
+    height: 100dvh;
     max-height: 100vh;
+    max-height: 100dvh;
     background-color: #141414;
     z-index: 1500;
     transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
@@ -182,7 +265,7 @@
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.35);
-    z-index: 0;
+    z-index: 1400;
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1);
@@ -192,6 +275,7 @@
 .cart-overlay.active {
     opacity: 1;
     visibility: visible;
+    pointer-events: auto;
 }
 
 .cart-content {
@@ -227,8 +311,13 @@
     font-size: 24px;
     cursor: pointer;
     transition: var(--transition);
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
 }
-
 .cart-close:hover {
     color: var(--primary-color);
 }
@@ -354,4 +443,10 @@
 
 .cart-total span:last-child {
     color: var(--primary-color);
+}
+
+@media (max-width: 360px) {
+    .nav-brand a {
+        font-size: 26px;
+    }
 }

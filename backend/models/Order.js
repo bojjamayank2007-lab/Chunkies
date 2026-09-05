@@ -18,6 +18,11 @@ const orderSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  customerId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Customer',
+    default: null
+  },
   phone: {
     type: String,
     required: true
@@ -80,6 +85,18 @@ const orderSchema = new mongoose.Schema({
     enum: ['Pending', 'Confirmed', 'Preparing', 'Ready', 'Out for Delivery', 'Completed', 'Cancelled'],
     default: 'Pending'
   },
+  paymentStatus: {
+    type: String,
+    enum: ['Pending', 'Paid', 'Failed'],
+    default: 'Pending'
+  },
+  paymentMethod: {
+    type: String,
+    enum: ['COD', 'Online'],
+    default: 'COD'
+  },
+  paymentId: String,
+  razorpayOrderId: String,
   notes: {
     type: String
   }

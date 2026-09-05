@@ -124,3 +124,8 @@
 .mobile-order span {
     font-size: 12px;
 }
+
+@media (max-width: 768px) {
+  body { padding-bottom: 80px; }
+  footer { padding-bottom: 80px; }
+}

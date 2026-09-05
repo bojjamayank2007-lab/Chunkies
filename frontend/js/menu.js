@@ -11,7 +11,7 @@ function renderMenuCard(item) {
     const featuredBadge = item.isFeatured ? '<div class="menu-card-badge">Featured</div>' : '';
     const stars = renderStars(item.rating);
     const imageUrl = item.image || '';
-
+    const safeName = item.name.replace(/'/g, '&#39;').replace(/"/g, '&quot;');
     return `
         <div class="menu-card" data-category="${item.category}" data-price="${item.price}" data-popularity="${item.popularity}">
             <div class="menu-card-image">
@@ -29,7 +29,7 @@ function renderMenuCard(item) {
                         <span>(${item.rating})</span>
                     </div>
                 </div>
-                <button class="add-to-cart" onclick="addToCart('${item._id}', '${item.name}', ${item.price})">
+                <button class="add-to-cart" onclick="addToCart('${item._id}', '${safeName}', ${item.price})">
                     Add to Cart
                 </button>
             </div>

@@ -1,41 +1,39 @@
 // Reviews functionality
 let selectedRating = 0;
 
+// XSS protection helper
+function escapeHTML(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
 // Render review card
 function renderReviewCard(review) {
     const stars = renderStars(review.rating);
-    const initial = review.name.charAt(0).toUpperCase();
+    const initial = escapeHTML(review.name.charAt(0).toUpperCase());
 
     return `
         <div class="review-card">
             <div class="review-header">
                 <div class="review-author">
                     <div class="review-avatar">${initial}</div>
-                    <div class="review-name">${review.name}</div>
+                    <div class="review-name">${escapeHTML(review.name)}</div>
                 </div>
                 <div class="review-stars">
                     ${stars}
                 </div>
             </div>
-            <p class="review-text">"${review.review}"</p>
+            <p class="review-text">"${escapeHTML(review.review)}"</p>
         </div>
     `;
 }
 
 // Render stars
-function renderStars(rating) {
-    let stars = '';
-    for (let i = 1; i <= 5; i++) {
-        if (i <= rating) {
-            stars += '<i class="fas fa-star"></i>';
-        } else if (i - 0.5 <= rating) {
-            stars += '<i class="fas fa-star-half-alt"></i>';
-        } else {
-            stars += '<i class="far fa-star"></i>';
-        }
-    }
-    return stars;
-}
+
 
 // Load reviews
 async function loadReviews() {
@@ -58,10 +56,12 @@ function setupReviewForm() {
 
     const ratingButtons = reviewForm.querySelectorAll('.rating-input button');
     const form = reviewForm.querySelector('form');
+    let isSubmitting = false;
 
     // Rating selection
     ratingButtons.forEach((btn, index) => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
             selectedRating = index + 1;
             ratingButtons.forEach((b, i) => {
                 b.classList.toggle('active', i < selectedRating);
@@ -73,14 +73,22 @@ function setupReviewForm() {
     if (form) {
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
-            const name = form.querySelector('#reviewName').value;
-            const review = form.querySelector('#reviewText').value;
+            if (isSubmitting) return;
+
+            const reviewNameInput = form.querySelector('#reviewName');
+            const reviewTextInput = form.querySelector('#reviewText');
+            const submitBtn = form.querySelector('button[type="submit"]');
+
+            const name = reviewNameInput ? reviewNameInput.value.trim() : '';
+            const review = reviewTextInput ? reviewTextInput.value.trim() : '';
 
             if (!name || !review || selectedRating === 0) {
                 alert('Please fill in all fields and select a rating');
                 return;
             }
+
+            isSubmitting = true;
+            if (submitBtn) submitBtn.disabled = true;
 
             try {
                 await api.createReview({
@@ -96,7 +104,10 @@ function setupReviewForm() {
                 loadReviews();
             } catch (error) {
                 console.error('Error submitting review:', error);
-                alert('Failed to submit review. Please try again.');
+                alert(error.message || 'Failed to submit review. Please try again.');
+            } finally {
+                isSubmitting = false;
+                if (submitBtn) submitBtn.disabled = false;
             }
         });
     }

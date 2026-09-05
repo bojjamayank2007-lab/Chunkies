@@ -33,7 +33,10 @@ const getMenuItems = async (req, res) => {
     
     res.json(menuItems);
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+    res.status(500).json({
+      message: 'Server error',
+      ...(process.env.NODE_ENV === 'development' && { error: error.message })
+    });
   }
 };
 
@@ -97,7 +100,10 @@ const createMenuItem = async (req, res) => {
     });
     res.status(201).json(menuItem);
   } catch (error) {
-    res.status(400).json({ message: 'Invalid menu item data', error: error.message });
+    res.status(400).json({
+      message: 'Invalid menu item data',
+      ...(process.env.NODE_ENV === 'development' && { error: error.message })
+    });
   }
 };
 
@@ -154,7 +160,10 @@ const updateMenuItem = async (req, res) => {
     await menuItem.save();
     res.json(menuItem);
   } catch (error) {
-    res.status(400).json({ message: 'Invalid menu item data', error: error.message });
+    res.status(400).json({
+      message: 'Invalid menu item data',
+      ...(process.env.NODE_ENV === 'development' && { error: error.message })
+    });
   }
 };
 
@@ -179,7 +188,10 @@ const deleteMenuItem = async (req, res) => {
     await menuItem.deleteOne();
     res.json({ message: 'Menu item deleted' });
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+    res.status(500).json({
+      message: 'Server error',
+      ...(process.env.NODE_ENV === 'development' && { error: error.message })
+    });
   }
 };
 

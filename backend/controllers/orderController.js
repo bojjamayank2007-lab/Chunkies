@@ -1,6 +1,7 @@
 const Order = require('../models/Order');
 const MenuItem = require('../models/MenuItem');
 const mongoose = require('mongoose');
+const { validatePaymentVerification } = require('razorpay/dist/utils/razorpay-utils');
 
 // @desc    Get all orders
 // @route   GET /api/orders
@@ -10,7 +11,10 @@ const getOrders = async (req, res) => {
     const orders = await Order.find().sort({ createdAt: -1 });
     res.json(orders);
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+    res.status(500).json({
+      message: 'Server error',
+      ...(process.env.NODE_ENV === 'development' && { error: error.message })
+    });
   }
 };
 
@@ -34,7 +38,10 @@ const getOrderById = async (req, res) => {
 
     res.json(order);
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+    res.status(500).json({
+      message: 'Server error',
+      ...(process.env.NODE_ENV === 'development' && { error: error.message })
+    });
   }
 };
 
@@ -43,7 +50,8 @@ const getOrderById = async (req, res) => {
 // @access  Public
 const createOrder = async (req, res) => {
   try {
-    const { customerName, phone, email, items, orderType, address, tableNumber, notes } = req.body;
+    const { customerName, phone, email, items, orderType, address, tableNumber, notes, paymentMethod = 'COD' } = req.body;
+    const customerId = req.customer?.id || null;
 
     // Customer name validation
     if (!customerName || typeof customerName !== 'string' || customerName.trim().length < 2) {
@@ -67,6 +75,10 @@ const createOrder = async (req, res) => {
     const validOrderTypes = ['Dine-in', 'Takeaway', 'Delivery'];
     if (!orderType || !validOrderTypes.includes(orderType)) {
       return res.status(400).json({ message: 'Valid order type is required (Dine-in, Takeaway, or Delivery)' });
+    }
+
+    if (!['COD', 'Online'].includes(paymentMethod)) {
+      return res.status(400).json({ message: 'Payment method must be COD or Online' });
     }
 
     // Order type-specific validation
@@ -129,8 +141,9 @@ const createOrder = async (req, res) => {
     const tax = Math.round(subtotal * 0.05); // 5% tax
     const total = subtotal + tax;
 
-    const order = await Order.create({
+    const order = new Order({
       customerName: customerName.trim(),
+      customerId,
       phone: phone.trim(),
       email: email ? email.trim() : undefined,
       items: validatedItems,
@@ -140,12 +153,113 @@ const createOrder = async (req, res) => {
       subtotal,
       tax,
       total,
+      paymentMethod,
       notes: notes ? notes.trim() : undefined
     });
 
-    res.status(201).json(order);
+    await order.validate();
+
+    let razorpayOrder;
+    if (paymentMethod === 'Online') {
+      razorpayOrder = await req.app.locals.razorpay.orders.create({
+        amount: total * 100,
+        currency: 'INR',
+        receipt: order.orderId
+      });
+
+      order.razorpayOrderId = razorpayOrder.id;
+    } else {
+      order.paymentStatus = 'Pending';
+    }
+
+    await order.save();
+
+    const orderResponse = {
+      ...order.toObject(),
+      paymentMethod
+    };
+
+    if (paymentMethod === 'Online') {
+      orderResponse.razorpayOrderId = razorpayOrder.id;
+      orderResponse.total = total;
+      orderResponse.keyId = process.env.RAZORPAY_KEY_ID;
+    }
+
+    res.status(201).json(orderResponse);
   } catch (error) {
-    res.status(400).json({ message: 'Invalid order data', error: error.message });
+    res.status(400).json({
+      message: 'Invalid order data',
+      ...(process.env.NODE_ENV === 'development' && { error: error.message })
+    });
+  }
+};
+
+// @desc    Get orders for the authenticated customer
+// @route   GET /api/orders/my-orders
+// @access  Customer only
+const getMyOrders = async (req, res) => {
+  try {
+    const orders = await Order.find({ customerId: req.customer.id }).sort({ createdAt: -1 });
+    res.json(orders);
+  } catch (error) {
+    res.status(500).json({
+      message: 'Server error',
+      ...(process.env.NODE_ENV === 'development' && { error: error.message })
+    });
+  }
+};
+
+// @desc    Verify Razorpay payment and mark order as paid
+// @route   POST /api/orders/verify-payment
+// @access  Public
+const verifyPayment = async (req, res) => {
+  try {
+    const { orderId, paymentId, razorpayOrderId, signature } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(orderId)) {
+      return res.status(400).json({ message: 'Invalid order ID' });
+    }
+
+    if (!paymentId || !razorpayOrderId || !signature) {
+      return res.status(400).json({ message: 'Payment verification details are required' });
+    }
+
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    if (order.paymentMethod !== 'Online') {
+      return res.status(400).json({ message: 'Payment verification is only available for online orders' });
+    }
+
+    if (order.razorpayOrderId !== razorpayOrderId) {
+      return res.status(400).json({ message: 'Razorpay order ID does not match' });
+    }
+
+    const isValid = validatePaymentVerification(
+      { order_id: razorpayOrderId, payment_id: paymentId },
+      signature,
+      process.env.RAZORPAY_KEY_SECRET
+    );
+
+    if (!isValid) {
+      order.paymentStatus = 'Failed';
+      await order.save();
+      return res.status(400).json({ message: 'Payment verification failed' });
+    }
+
+    order.paymentStatus = 'Paid';
+    order.paymentId = paymentId;
+    await order.save();
+
+    res.json({ success: true, message: 'Payment verified successfully' });
+  } catch (error) {
+    res.status(400).json({
+      message: 'Payment verification failed',
+      ...(process.env.NODE_ENV === 'development' && { error: error.message })
+    });
   }
 };
 
@@ -180,7 +294,10 @@ const updateOrder = async (req, res) => {
     await order.save();
     res.json(order);
   } catch (error) {
-    res.status(400).json({ message: 'Invalid order data', error: error.message });
+    res.status(400).json({
+      message: 'Invalid order data',
+      ...(process.env.NODE_ENV === 'development' && { error: error.message })
+    });
   }
 };
 
@@ -205,7 +322,10 @@ const deleteOrder = async (req, res) => {
     await order.deleteOne();
     res.json({ message: 'Order deleted' });
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+    res.status(500).json({
+      message: 'Server error',
+      ...(process.env.NODE_ENV === 'development' && { error: error.message })
+    });
   }
 };
 
@@ -213,6 +333,8 @@ module.exports = {
   getOrders,
   getOrderById,
   createOrder,
+  getMyOrders,
+  verifyPayment,
   updateOrder,
   deleteOrder
 };

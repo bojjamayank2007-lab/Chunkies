@@ -15,6 +15,8 @@
     <link rel="stylesheet" href="css/menu.css">
     <link rel="stylesheet" href="css/footer.css">
     <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="css/mobile-app.css">
+    <link rel="stylesheet" href="css/final-fixes.css">
 </head>
 <body>
     <!-- Navbar -->
@@ -34,7 +36,7 @@
             </ul>
             
             <div class="nav-actions">
-                <a href="menu.html" class="btn btn-primary">ORDER NOW</a>
+                <div id="navProfileAction" class="nav-profile-action"></div>
                 <button class="cart-btn" id="cartBtn">
                     <i class="fas fa-shopping-cart"></i>
                     <span class="cart-count" id="cartCount">0</span>
@@ -126,6 +128,12 @@
                             <label for="notes">Special Instructions</label>
                             <textarea id="notes" name="notes" rows="2" placeholder="Any special requests?"></textarea>
                         </div>
+
+                        <div class="form-group">
+                            <label>Payment Method</label>
+                            <label><input type="radio" name="paymentMethod" value="COD" checked> Cash on Delivery</label>
+                            <label><input type="radio" name="paymentMethod" value="Online"> Pay Online</label>
+                        </div>
                         
                         <button type="submit" class="btn btn-primary btn-block btn-lg">PLACE ORDER</button>
                     </form>
@@ -143,6 +151,7 @@
             <h2>ORDER PLACED SUCCESSFULLY!</h2>
             <p>Your order has been received.</p>
             <p class="order-id">Order ID: <span id="successOrderId"></span></p>
+            <p class="order-message">Payment Status: <span id="successPaymentStatus"></span></p>
             <p class="order-message">We'll prepare your order right away!</p>
             <a href="index.html" class="btn btn-primary">BACK TO HOME</a>
         </div>
@@ -190,21 +199,16 @@
     </footer>
 
     <!-- Mobile Sticky Buttons -->
-    <div class="mobile-sticky">
-        <a href="tel:09004094979" class="mobile-call">
-            <i class="fas fa-phone"></i>
-            <span>CALL</span>
-        </a>
-        <a href="menu.html" class="mobile-order">
-            <i class="fas fa-shopping-bag"></i>
-            <span>ORDER</span>
-        </a>
-    </div>
-
     <!-- JavaScript -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script src="js/api.js"></script>
+    <script src="js/customerAuth.js"></script>
     <script src="js/navbar.js"></script>
     <script src="js/contact.js"></script>
     <script src="js/cart.js"></script>
+    <script src="js/restaurant.js"></script>
+
+
+
 </body>
 </html>

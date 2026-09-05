@@ -4,42 +4,50 @@ const restaurantSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
-    default: 'CHUNKIES'
+    default: 'CHUNKIES',
+    maxlength: 100
   },
   nameHindi: {
     type: String,
-    default: 'चुंकीज़'
+    default: 'चुंकीज़',
+    maxlength: 100
   },
   category: {
     type: String,
-    default: 'Fast Food Restaurant'
+    default: 'Fast Food Restaurant',
+    maxlength: 50
   },
   address: {
-    street: String,
-    area: String,
-    city: String,
-    state: String,
-    zipCode: String,
+    street:      { type: String, maxlength: 200 },
+    area:        { type: String, maxlength: 100 },
+    city:        { type: String, maxlength: 100 },
+    state:       { type: String, maxlength: 100 },
+    zipCode:     { type: String, maxlength: 20  },
     fullAddress: {
       type: String,
-      default: '225, Swami Vivekanand Rd, Collectors Colony, Momin Nagar, Jogeshwari West, Mumbai, Maharashtra 400102'
+      default: '225, Swami Vivekanand Rd, Collectors Colony, Momin Nagar, Jogeshwari West, Mumbai, Maharashtra 400102',
+      maxlength: 500
     }
   },
   phone: {
     type: String,
     required: true,
-    default: '090040 94979'
+    default: '090040 94979',
+    maxlength: 20
   },
   email: {
-    type: String
+    type: String,
+    maxlength: 100
   },
   priceRange: {
     type: String,
-    default: '₹200–₹400 per person'
+    default: '₹200–₹400 per person',
+    maxlength: 50
   },
   openingHours: {
     type: String,
-    default: 'Open 24 Hours'
+    default: 'Open 24 Hours',
+    maxlength: 100
   },
   services: [{
     type: String,
@@ -55,11 +63,11 @@ const restaurantSchema = new mongoose.Schema({
     default: 566
   },
   socialMedia: {
-    instagram: String,
-    facebook: String,
-    twitter: String
+    instagram: { type: String, maxlength: 200 },
+    facebook:  { type: String, maxlength: 200 },
+    twitter:   { type: String, maxlength: 200 }
   },
-  googleMapsUrl: String
+  googleMapsUrl: { type: String, maxlength: 500 }
 }, {
   timestamps: true
 });

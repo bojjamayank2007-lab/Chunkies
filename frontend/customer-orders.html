@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders — CHUNKIES</title>
+    <meta name="description" content="Track your CHUNKIES orders.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/menu.css">
+    <link rel="stylesheet" href="css/footer.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="css/mobile-app.css">
+    <link rel="stylesheet" href="css/final-fixes.css">
+</head>
+<body>
+    <nav class="navbar" id="navbar">
+        <div class="container">
+            <div class="nav-brand"><a href="index.html">CHUNKIES</a><span class="nav-brand-hindi">चुंकीज़</span></div>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="index.html" class="nav-link">HOME</a></li>
+                <li><a href="menu.html" class="nav-link">MENU</a></li>
+                <li><a href="about.html" class="nav-link">ABOUT</a></li>
+                <li><a href="index.html#reviews" class="nav-link">REVIEWS</a></li>
+                <li><a href="contact.html" class="nav-link">CONTACT</a></li>
+            </ul>
+            <div class="nav-actions">
+                <div id="navProfileAction" class="nav-profile-action"></div>
+                <button class="cart-btn" id="cartBtn"><i class="fas fa-shopping-cart"></i><span class="cart-count" id="cartCount">0</span></button>
+                <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+            </div>
+        </div>
+    </nav>
+
+    <section class="page-header"><div class="container"><h1>MY ORDERS</h1><p>Track your CHUNKIES orders</p></div></section>
+
+    <section class="checkout-section">
+        <div class="container">
+            <div class="order-summary">
+                <h2>Welcome, <span id="customerOrdersName">Customer</span></h2>
+                <div class="cart-items" id="customerOrdersList"><p class="empty-cart">Loading your orders...</p></div>
+                <button type="button" class="btn btn-secondary" id="customerLogoutButton">SIGN OUT</button>
+            </div>
+        </div>
+    </section>
+
+    <script src="js/api.js"></script>
+    <script src="js/customerAuth.js"></script>
+    <script src="js/navbar.js"></script>
+    <script src="js/cart.js"></script>
+
+
+
+</body>
+</html>

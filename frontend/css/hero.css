@@ -302,3 +302,10 @@
     background-color: var(--primary-dark);
     transform: scale(1.05);
 }
+
+@media (max-width: 360px) {
+    .hero-card {
+        max-width: 100%;
+        padding: 24px;
+    }
+}

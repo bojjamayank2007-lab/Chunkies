@@ -50,8 +50,36 @@
         right: 0;
     }
     
-    .nav-actions .btn {
+    .nav-actions .btn:not(.nav-login-btn) {
         display: none;
+    }
+
+    .nav-actions {
+        gap: 8px;
+        min-width: 0;
+    }
+
+    .nav-login-btn {
+        padding: 10px 12px;
+        font-size: 12px;
+        letter-spacing: 0;
+    }
+
+    .nav-profile-area {
+        gap: 6px;
+    }
+
+    .nav-profile-icon {
+        font-size: 20px;
+    }
+
+    .customer-name {
+        font-size: 12px;
+        max-width: 80px;
+    }
+
+    .logout-link {
+        font-size: 12px;
     }
     
     .hamburger {
@@ -114,6 +142,10 @@
     .cart-drawer {
         width: 100%;
         right: -100%;
+        height: 100vh;
+        height: 100dvh;
+        max-height: 100vh;
+        max-height: 100dvh;
     }
     
     .cart-drawer.active {
@@ -152,6 +184,102 @@
     .filter-categories {
         flex-wrap: wrap;
         justify-content: center;
+    }
+
+    /* ===== Mobile-only improvements (≤768px) ===== */
+
+    /* Prevent horizontal overflow */
+    html,
+    body {
+        overflow-x: hidden;
+    }
+
+    .navbar .container {
+        flex-wrap: nowrap;
+    }
+
+    /* Touch-friendly targets (min 44px) */
+    .btn,
+    .nav-login-btn,
+    .cart-btn,
+    .hamburger,
+    .add-to-cart,
+    .quantity-btn,
+    .filter-btn,
+    .form-group input,
+    .form-group select,
+    .form-group textarea,
+    .mobile-call,
+    .mobile-order {
+        min-height: 44px;
+    }
+
+    .cart-btn {
+        padding: 10px;
+    }
+
+    .hamburger {
+        padding: 10px;
+    }
+
+    /* Cart drawer — checkout stays visible & tappable */
+    .cart-footer {
+        padding-bottom: 20px;
+    }
+
+    .cart-footer .btn {
+        min-height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .quantity-btn {
+        width: 44px;
+        height: 44px;
+        font-size: 18px;
+    }
+
+    /* Checkout form — large, tap-friendly inputs */
+    .checkout-form {
+        padding: 24px 20px;
+    }
+
+    .checkout-form .form-group input,
+    .checkout-form .form-group select,
+    .checkout-form .form-group textarea {
+        min-height: 48px;
+        font-size: 16px;
+    }
+
+    .checkout-form .form-group textarea {
+        min-height: 80px;
+    }
+
+    .checkout-form .btn-block {
+        min-height: 50px;
+        margin-bottom: 20px;
+    }
+
+    /* Menu cards — avoid cramped layout */
+    .menu-card-content {
+        padding: 20px 16px;
+    }
+
+    .add-to-cart {
+        min-height: 48px;
+    }
+
+    /* Footer — reasonable spacing & touch targets */
+    .footer-section ul li a {
+        display: inline-block;
+        padding: 8px 0;
+        min-height: 44px;
+        line-height: 1.4;
+    }
+
+    .footer-section p {
+        padding: 6px 0;
     }
 }
 
@@ -231,6 +359,72 @@
         width: 60px;
         height: 60px;
         font-size: 24px;
+    }
+    
+    .cart-footer {
+        padding: 16px;
+    }
+
+    /* ===== Small-screen refinements (≤480px) ===== */
+
+    .nav-actions {
+        gap: 6px;
+    }
+
+    .nav-login-btn {
+        padding: 10px 14px;
+    }
+
+    .cart-btn {
+        padding: 8px;
+    }
+
+    .menu-card-content {
+        padding: 16px 14px;
+    }
+
+    .menu-card-footer {
+        margin-bottom: 12px;
+    }
+
+    .add-to-cart {
+        padding: 14px 16px;
+        font-size: 14px;
+    }
+
+    .cart-item {
+        gap: 12px;
+    }
+
+    .cart-item-quantity {
+        gap: 8px;
+    }
+
+    .quantity-btn {
+        width: 40px;
+        height: 40px;
+        min-height: 40px;
+        font-size: 18px;
+    }
+
+    .cart-footer .btn {
+        min-height: 48px;
+    }
+
+    .checkout-form {
+        padding: 20px 16px;
+    }
+
+    .order-summary {
+        padding: 20px 16px;
+    }
+
+    .footer-content {
+        gap: 32px;
+    }
+
+    .footer-section h4 {
+        margin-bottom: 16px;
     }
 }
 
@@ -577,4 +771,322 @@
 
 .total-row.total span:last-child {
     color: var(--primary-color);
+}
+
+
+@media (max-width: 600px) {
+    .contact-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+}
+
+@media (max-width: 360px) {
+    .nav-actions {
+        gap: 4px;
+    }
+
+    .nav-profile-area {
+        gap: 4px;
+    }
+
+    .customer-name {
+        max-width: 60px;
+        font-size: 11px;
+    }
+
+    .nav-login-btn {
+        padding: 8px 10px;
+        font-size: 11px;
+    }
+
+    .cart-btn {
+        padding: 6px;
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 992px) {
+  .navbar .container { gap: 12px; }
+  .brand { font-size: 24px; }
+  .nav-menu { gap: 16px; }
+}
+
+/* ========================================
+   MOBILE CONTAINMENT & ALIGNMENT FIXES
+   Applies only below 768px
+   ======================================== */
+
+@media (max-width: 768px) {
+  html, body {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  img, svg, video, iframe, table {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+  .container,
+  .navbar .container,
+  .menu-grid,
+  .reviews-grid,
+  .footer-content,
+  .checkout-form,
+  .order-summary,
+  .cart-drawer,
+  .cart-content,
+  .about-highlights,
+  .contact-grid,
+  .contact-buttons {
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
+  .navbar,
+  .navbar .container {
+    flex-wrap: wrap;
+  }
+
+  .nav-menu {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .nav-actions {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .btn,
+  .nav-login-btn,
+  .cart-btn,
+  .hamburger {
+    white-space: nowrap;
+  }
+
+  .cart-drawer {
+    right: -100%;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .cart-content {
+    width: 100%;
+  }
+
+  .cart-item {
+    flex-wrap: wrap;
+  }
+
+  .cart-item-details {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .checkout-form,
+  .order-summary,
+  .checkout-section,
+  .form-group {
+    width: 100%;
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+  }
+
+  .footer-content {
+    flex-direction: column;
+  }
+
+  .footer-section {
+    width: 100%;
+  }
+
+  .menu-card,
+  .review-card,
+  .highlight,
+  .service-card {
+    width: 100% !important;
+    max-width: 100%;
+  }
+
+  .filter-categories {
+    flex-wrap: wrap;
+  }
+
+  .contact-buttons {
+    flex-direction: column;
+  }
+
+  .contact-buttons .btn {
+    width: 100%;
+  }
+
+  .modal-content {
+    width: 90%;
+    max-width: 90%;
+  }
+
+  .customer-orders-list .order-card {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .order-summary table,
+  .order-summary * {
+    max-width: 100%;
+  }
+
+  p, h1, h2, h3, h4, h5, h6, span, a {
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar {
+    padding: 10px 12px;
+  }
+
+  .nav-actions {
+    gap: 4px;
+  }
+
+  .nav-login-btn {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+
+  .cart-btn,
+  .hamburger {
+    padding: 8px;
+  }
+
+  .menu-card-content {
+    padding: 12px;
+  }
+
+  .checkout-form,
+  .order-summary {
+    padding: 16px;
+  }
+
+  .btn-block {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Final containment pass */
+  body, html {
+    overflow-x: hidden !important;
+  }
+
+  section, main, footer, header, .container,
+  .navbar, .nav-menu, .nav-actions,
+  .hero, .menu-grid, .menu-card,
+  .reviews-grid, .review-card,
+  .about-highlights, .highlight,
+  .contact-grid, .contact-buttons,
+  .footer-content, .footer-section,
+  .cart-drawer, .cart-content, .cart-item,
+  .checkout-form, .checkout-section, .order-summary,
+  .form-group, .form-row,
+  .customer-orders-list, .order-card,
+  .modal-content {
+    max-width: 100vw !important;
+    width: 100% !important;
+  }
+
+  .btn, .nav-login-btn, .cart-btn, .hamburger,
+  .add-to-cart, .quantity-btn, .filter-btn {
+    max-width: 100%;
+    white-space: normal;
+  }
+
+  .cart-drawer {
+    left: 0;
+    right: 0;
+    width: 100vw;
+  }
+
+  .navbar .container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .nav-actions {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .checkout-form .form-row {
+    flex-direction: column;
+  }
+
+  .checkout-form .form-row > * {
+    width: 100%;
+  }
+}
+
+/* ============================================
+   ULTIMATE MOBILE NAV + CART OVERLAY FIX
+   ============================================ */
+@media (max-width: 768px) {
+  /* Force nav menu offscreen by default */
+  html body #navMenu {
+    position: fixed !important;
+    top: 0 !important;
+    left: -100% !important;
+    right: auto !important;
+    width: 80% !important;
+    max-width: 300px !important;
+    height: 100vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 16px !important;
+    padding: 24px !important;
+    margin: 0 !important;
+    background: var(--bg-card, #141414) !important;
+    transform: none !important;
+    transition: left 0.3s ease !important;
+    z-index: 2000 !important;
+    overflow-y: auto !important;
+  }
+
+  html body #navMenu.active {
+    left: 0 !important;
+  }
+
+  /* Ensure cart overlay is hidden unless active */
+  html body .cart-overlay {
+    display: none !important;
+  }
+
+  html body .cart-overlay.active {
+    display: block !important;
+  }
+
+  /* Ensure cart drawer is offscreen unless active */
+  html body .cart-drawer {
+    transform: translateX(100%) !important;
+  }
+
+  html body .cart-drawer.active {
+    transform: translateX(0) !important;
+  }
+
+  /* Keep hamburger visible */
+  html body #hamburger {
+    display: flex !important;
+  }
 }

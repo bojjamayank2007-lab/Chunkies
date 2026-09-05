@@ -5,14 +5,19 @@ const {
   getOrders,
   getOrderById,
   createOrder,
+  getMyOrders,
+  verifyPayment,
   updateOrder,
   deleteOrder
 } = require('../controllers/orderController');
 
 const { protect } = require('../middleware/authMiddleware');
+const { protectCustomer, optionalCustomerAuth } = require('../middleware/customerAuthMiddleware');
 
 // Public: customers can place orders
-router.post('/', createOrder);
+router.post('/', optionalCustomerAuth, createOrder);
+router.post('/verify-payment', verifyPayment);
+router.get('/my-orders', protectCustomer, getMyOrders);
 
 // Admin only: view all orders
 router.get('/', protect, getOrders);

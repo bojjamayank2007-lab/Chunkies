@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account — CHUNKIES</title>
+    <meta name="description" content="Sign in or create your CHUNKIES customer account.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/menu.css">
+    <link rel="stylesheet" href="css/footer.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="css/mobile-app.css">
+    <link rel="stylesheet" href="css/final-fixes.css">
+</head>
+<body>
+    <nav class="navbar" id="navbar">
+        <div class="container">
+            <div class="nav-brand"><a href="index.html">CHUNKIES</a><span class="nav-brand-hindi">चुंकीज़</span></div>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="index.html" class="nav-link">HOME</a></li>
+                <li><a href="menu.html" class="nav-link">MENU</a></li>
+                <li><a href="about.html" class="nav-link">ABOUT</a></li>
+                <li><a href="index.html#reviews" class="nav-link">REVIEWS</a></li>
+                <li><a href="contact.html" class="nav-link">CONTACT</a></li>
+            </ul>
+            <div class="nav-actions">
+                <div id="navProfileAction" class="nav-profile-action"></div>
+                <button class="cart-btn" id="cartBtn"><i class="fas fa-shopping-cart"></i><span class="cart-count" id="cartCount">0</span></button>
+                <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+            </div>
+        </div>
+    </nav>
+
+    <section class="page-header"><div class="container"><h1>YOUR ACCOUNT</h1><p>Sign in to track your orders</p></div></section>
+
+    <section class="checkout-section">
+        <div class="container">
+            <div class="checkout-grid">
+                <div class="checkout-form">
+                    <h2>Sign In</h2>
+                    <form id="customerLoginForm">
+                        <div class="form-group"><label for="customerLoginEmail">Email</label><input type="email" id="customerLoginEmail" name="email" required></div>
+                        <div class="form-group"><label for="customerLoginPassword">Password</label><input type="password" id="customerLoginPassword" name="password" minlength="6" required></div>
+                        <p id="customerLoginMessage" aria-live="polite"></p>
+                        <button type="submit" class="btn btn-primary btn-block">SIGN IN</button>
+                    </form>
+                </div>
+                <div class="checkout-form">
+                    <h2>Create Account</h2>
+                    <form id="customerRegisterForm">
+                        <div class="form-group"><label for="customerName">Full Name</label><input type="text" id="customerName" name="name" minlength="2" maxlength="100" required></div>
+                        <div class="form-group"><label for="customerEmail">Email</label><input type="email" id="customerEmail" name="email" required></div>
+                        <div class="form-group"><label for="customerPhone">Phone</label><input type="tel" id="customerPhone" name="phone" maxlength="20" required></div>
+                        <div class="form-group"><label for="customerPassword">Password</label><input type="password" id="customerPassword" name="password" minlength="6" required></div>
+                        <p id="customerRegisterMessage" aria-live="polite"></p>
+                        <button type="submit" class="btn btn-primary btn-block">CREATE ACCOUNT</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="js/api.js"></script>
+    <script src="js/customerAuth.js"></script>
+    <script src="js/navbar.js"></script>
+    <script src="js/cart.js"></script>
+
+
+
+</body>
+</html>

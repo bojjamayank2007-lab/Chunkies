@@ -22,8 +22,10 @@
     <link rel="stylesheet" href="css/reviews.css">
     <link rel="stylesheet" href="css/footer.css">
     <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="css/mobile-app.css">
+    <link rel="stylesheet" href="css/final-fixes.css">
 </head>
-<body>
+<body class="home">
     <!-- Navbar -->
     <nav class="navbar" id="navbar">
         <div class="container">
@@ -41,7 +43,7 @@
             </ul>
             
             <div class="nav-actions">
-                <a href="menu.html" class="btn btn-primary">ORDER NOW</a>
+                <div id="navProfileAction" class="nav-profile-action"></div>
                 <button class="cart-btn" id="cartBtn">
                     <i class="fas fa-shopping-cart"></i>
                     <span class="cart-count" id="cartCount">0</span>
@@ -186,8 +188,8 @@
     </footer>
 
     <!-- Cart Drawer -->
+    <div class="cart-overlay" id="cartOverlay"></div>
     <div class="cart-drawer" id="cartDrawer">
-        <div class="cart-overlay" id="cartOverlay"></div>
         <div class="cart-content">
             <div class="cart-header">
                 <h3>Your Cart</h3>
@@ -209,23 +211,17 @@
     </div>
 
     <!-- Mobile Sticky Buttons -->
-    <div class="mobile-sticky">
-        <a href="tel:09004094979" class="mobile-call">
-            <i class="fas fa-phone"></i>
-            <span>CALL</span>
-        </a>
-        <a href="menu.html" class="mobile-order">
-            <i class="fas fa-shopping-bag"></i>
-            <span>ORDER</span>
-        </a>
-    </div>
-
     <!-- JavaScript -->
     <script src="js/api.js"></script>
+    <script src="js/customerAuth.js"></script>
     <script src="js/navbar.js"></script>
     <script src="js/menu.js"></script>
     <script src="js/cart.js"></script>
     <script src="js/reviews.js"></script>
+    <script src="js/restaurant.js"></script>
     <script src="js/main.js"></script>
+
+
+
 </body>
 </html>

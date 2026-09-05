@@ -142,3 +142,18 @@
     min-height: 120px;
     resize: vertical;
 }
+
+/* Very small screens */
+@media (max-width: 320px) {
+    .reviews-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .rating-summary {
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+    }
+}

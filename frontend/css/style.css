@@ -199,6 +199,8 @@ section {
     text-align: center;
     max-width: 500px;
     width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
     animation: modalSlideIn 0.3s ease;
 }
 
@@ -250,4 +252,8 @@ section {
     border-radius: 8px;
     margin-bottom: 20px;
     text-align: center;
+}
+
+@media (max-width: 480px) {
+  .modal-content { padding: 20px; }
 }

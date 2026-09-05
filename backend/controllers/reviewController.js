@@ -8,7 +8,10 @@ const getReviews = async (req, res) => {
     const reviews = await Review.find().sort({ createdAt: -1 });
     res.json(reviews);
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+    res.status(500).json({
+      message: 'Server error',
+      ...(process.env.NODE_ENV === 'development' && { error: error.message })
+    });
   }
 };
 
@@ -22,21 +25,33 @@ const createReview = async (req, res) => {
     if (!name || !rating || !review) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
-    
-    if (rating < 1 || rating > 5) {
-      return res.status(400).json({ message: 'Rating must be between 1 and 5' });
+
+    if (typeof name !== 'string' || name.trim().length < 2 || name.trim().length > 100) {
+      return res.status(400).json({ message: 'Name must be between 2 and 100 characters' });
+    }
+
+    const parsedRating = Number(rating);
+    if (!Number.isInteger(parsedRating) || parsedRating < 1 || parsedRating > 5) {
+      return res.status(400).json({ message: 'Rating must be an integer between 1 and 5' });
+    }
+
+    if (typeof review !== 'string' || review.trim().length < 10 || review.trim().length > 1000) {
+      return res.status(400).json({ message: 'Review must be between 10 and 1000 characters' });
     }
     
     const newReview = await Review.create({
-      name,
-      rating,
-      review,
+      name: name.trim(),
+      rating: parsedRating,
+      review: review.trim(),
       isDemo: false
     });
     
     res.status(201).json(newReview);
   } catch (error) {
-    res.status(400).json({ message: 'Invalid review data', error: error.message });
+    res.status(400).json({
+      message: 'Invalid review data',
+      ...(process.env.NODE_ENV === 'development' && { error: error.message })
+    });
   }
 };
 
@@ -54,7 +69,10 @@ const deleteReview = async (req, res) => {
     await review.deleteOne();
     res.json({ message: 'Review deleted' });
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+    res.status(500).json({
+      message: 'Server error',
+      ...(process.env.NODE_ENV === 'development' && { error: error.message })
+    });
   }
 };
 

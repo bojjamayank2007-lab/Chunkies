@@ -37,5 +37,4 @@ document.addEventListener('DOMContentLoaded', () => {
         observer.observe(el);
     });
 
-    console.log('CHUNKIES website loaded successfully!');
 });

@@ -8,8 +8,13 @@ async function seedAdmin() {
   try {
     await mongoose.connect(process.env.MONGO_URI);
 
-    const email = 'admin@chunkies.local';
-    const password = 'Chunkies@123';
+    const email = process.env.ADMIN_EMAIL;
+    const password = process.env.ADMIN_PASSWORD;
+
+    if (!email || !password) {
+      console.error('ADMIN_EMAIL and ADMIN_PASSWORD must be set in .env');
+      process.exit(1);
+    }
 
     const existingAdmin = await Admin.findOne({ email });
 
@@ -31,7 +36,6 @@ async function seedAdmin() {
 
     console.log('Admin created successfully');
     console.log(`Email: ${email}`);
-    console.log(`Password: ${password}`);
 
     await mongoose.disconnect();
   } catch (error) {
