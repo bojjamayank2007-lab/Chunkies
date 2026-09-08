@@ -79,22 +79,8 @@
     font-size: 14px;
 }
 
-/* Mobile Sticky Buttons */
-.mobile-sticky {
-    display: none;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background-color: var(--bg-card);
-    padding: 12px;
-    gap: 12px;
-    z-index: 999;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
-}
-
-.mobile-call,
-.mobile-order {
+/* Mobile Call Button */
+.mobile-call {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -109,18 +95,15 @@
     transition: var(--transition);
 }
 
-.mobile-call:hover,
-.mobile-order:hover {
+.mobile-call:hover {
     background-color: var(--primary-dark);
     transform: translateY(-2px);
 }
 
-.mobile-call i,
-.mobile-order i {
+.mobile-call i {
     font-size: 20px;
 }
 
-.mobile-call span,
-.mobile-order span {
+.mobile-call span {
     font-size: 12px;
 }

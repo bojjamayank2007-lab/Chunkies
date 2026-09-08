@@ -11,7 +11,6 @@ function renderMenuCard(item) {
     const vegLabel = item.isVeg ? 'VEG' : 'NON-VEG';
     const featuredBadge = item.isFeatured ? '<div class="menu-card-badge">Featured</div>' : '';
     const stars = renderStars(item.rating);
-    const imageUrl = item.image || '';
     const safeDisplayName = escapeHTML(item.name || '');
     const safeDescription = escapeHTML(item.description || '');
     const safeImageUrl = escapeHTML(item.image || '');

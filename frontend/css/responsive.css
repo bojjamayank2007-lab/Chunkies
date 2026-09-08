@@ -65,23 +65,6 @@
         letter-spacing: 0;
     }
 
-    .nav-profile-area {
-        gap: 6px;
-    }
-
-    .nav-profile-icon {
-        font-size: 20px;
-    }
-
-    .customer-name {
-        font-size: 12px;
-        max-width: 80px;
-    }
-
-    .logout-link {
-        font-size: 12px;
-    }
-    
     .hamburger {
         display: flex;
     }
@@ -152,10 +135,6 @@
         right: 0;
     }
     
-    .mobile-sticky {
-        display: flex;
-    }
-    
     .checkout-grid {
         grid-template-columns: 1fr;
     }
@@ -209,8 +188,7 @@
     .form-group input,
     .form-group select,
     .form-group textarea,
-    .mobile-call,
-    .mobile-order {
+    .mobile-call {
         min-height: 44px;
     }
 
@@ -558,35 +536,6 @@
     font-size: 14px;
 }
 
-.about-image {
-    display: flex;
-    justify-content: center;
-}
-
-.image-placeholder {
-    width: 100%;
-    max-width: 400px;
-    aspect-ratio: 1;
-    background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-card-hover) 100%);
-    border-radius: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid var(--border-color);
-}
-
-.image-placeholder i {
-    font-size: 64px;
-    color: var(--text-light);
-    margin-bottom: 16px;
-}
-
-.image-placeholder span {
-    color: var(--text-light);
-    font-size: 18px;
-}
-
 /* Services Section */
 .services-section {
     background-color: var(--bg-darker);
@@ -786,15 +735,6 @@
         gap: 4px;
     }
 
-    .nav-profile-area {
-        gap: 4px;
-    }
-
-    .customer-name {
-        max-width: 60px;
-        font-size: 11px;
-    }
-
     .nav-login-btn {
         padding: 8px 10px;
         font-size: 11px;
@@ -808,7 +748,6 @@
 
 @media (max-width: 992px) {
   .navbar .container { gap: 12px; }
-  .brand { font-size: 24px; }
   .nav-menu { gap: 16px; }
 }
 
@@ -935,11 +874,6 @@
     max-width: 90%;
   }
 
-  .customer-orders-list .order-card {
-    width: 100%;
-    max-width: 100%;
-  }
-
   .order-summary table,
   .order-summary * {
     max-width: 100%;
@@ -999,8 +933,8 @@
   .footer-content, .footer-section,
   .cart-drawer, .cart-content, .cart-item,
   .checkout-form, .checkout-section, .order-summary,
-  .form-group, .form-row,
-  .customer-orders-list, .order-card,
+  .form-group,
+  .order-card,
   .modal-content {
     max-width: 100vw !important;
     width: 100% !important;
@@ -1025,14 +959,6 @@
 
   .nav-actions {
     justify-content: space-between;
-    width: 100%;
-  }
-
-  .checkout-form .form-row {
-    flex-direction: column;
-  }
-
-  .checkout-form .form-row > * {
     width: 100%;
   }
 }

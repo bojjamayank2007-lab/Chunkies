@@ -34,11 +34,9 @@
     min-width: 0 !important;
   }
 
-  /* Legacy sticky-bar helpers kept inert — the sticky bar
+  /* The "call" sticky helper is kept inert — the sticky bar
      itself was removed (see footer.css). */
-  .mobile-sticky,
-  .mobile-call,
-  .mobile-order {
+  .mobile-call {
     display: none !important;
   }
 
@@ -99,22 +97,6 @@
   #navProfileAction .nav-login-btn {
     padding: 8px 10px !important;
     font-size: 12px !important;
-    white-space: nowrap !important;
-  }
-
-  .nav-profile-area {
-    display: flex !important;
-    align-items: center !important;
-    gap: 4px !important;
-    max-width: 100% !important;
-    overflow: hidden !important;
-  }
-
-  .nav-profile-area .customer-name {
-    display: inline-block !important;
-    max-width: 60px !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
     white-space: nowrap !important;
   }
 
@@ -312,11 +294,6 @@
     display: block !important;
     width: 100% !important;
     margin-bottom: 32px !important;
-  }
-
-  .about-image {
-    display: block !important;
-    width: 100% !important;
   }
 
   .about-highlights {

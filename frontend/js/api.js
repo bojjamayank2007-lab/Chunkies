@@ -40,19 +40,6 @@ function escapeHTML(value) {
         .replace(/'/g, '&#039;');
 }
 
-const adminFetch = async (url, options = {}) => {
-    const response = await fetch(url, {
-        ...options,
-        credentials: 'include'
-    });
-
-    if (response.status === 401) {
-        window.dispatchEvent(new Event('admin-session-expired'));
-    }
-
-    return response;
-};
-
 // API Functions
 const api = {
 
@@ -81,10 +68,6 @@ const api = {
             : `${API_BASE_URL}/menu`;
 
         return safeFetch(url, { credentials: 'include' });
-    },
-
-    getMenuItemById: async (id) => {
-        return safeFetch(`${API_BASE_URL}/menu/${id}`, { credentials: 'include' });
     },
 
     createMenuItem: async (data) => {

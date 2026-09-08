@@ -102,46 +102,6 @@
     white-space: nowrap;
 }
 
-.nav-profile-area {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    min-width: 0;
-}
-
-.nav-profile-icon {
-    font-size: 24px;
-    color: var(--primary-color);
-    flex-shrink: 0;
-}
-
-.customer-name {
-    color: var(--white);
-    font-weight: 600;
-    font-size: 14px;
-    letter-spacing: 1px;
-    white-space: nowrap;
-    max-width: 120px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.logout-link {
-    background: none;
-    border: 0;
-    cursor: pointer;
-    padding: 0;
-    font-family: inherit;
-    font-size: 14px;
-    text-transform: uppercase;
-    color: var(--text-light);
-    transition: var(--transition);
-}
-
-.logout-link:hover {
-    color: var(--primary-color);
-}
-
 .modal-close {
     position: absolute;
     top: 12px;

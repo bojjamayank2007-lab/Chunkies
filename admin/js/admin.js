@@ -194,19 +194,8 @@ function showLoginScreen() {
 
 
 // ========================================
-// Session Expired
-// ========================================
-
-window.addEventListener('admin-session-expired', () => {
-    showLoginScreen();
-
-    const loginForm = document.getElementById('loginForm');
-
-    if (loginForm) {
-        loginForm.reset();
-    }
-});
 // Admin Dashboard JavaScript
+// ========================================
 let allOrders = [];
 let allMenuItems = [];
 let allReviews = [];
