@@ -34,16 +34,20 @@ async function logoutCustomer() {
 async function getCustomer() {
     try {
         const data = await safeFetch(`${customerApiBase}/me`, { credentials: 'include' });
-        window.isCustomerLoggedIn = true;
-        window.currentCustomer = data.customer;
-        return data.customer;
-    } catch (error) {
-        if (error.status === 401 || error.status === 403) {
+
+        if (!data.customer) {
             window.isCustomerLoggedIn = false;
             window.currentCustomer = null;
             return null;
         }
-        throw error;
+
+        window.isCustomerLoggedIn = true;
+        window.currentCustomer = data.customer;
+        return data.customer;
+    } catch (error) {
+        window.isCustomerLoggedIn = false;
+        window.currentCustomer = null;
+        return null;
     }
 }
 
