@@ -7,11 +7,11 @@ const {
   logoutCustomer,
   getCurrentCustomer
 } = require('../controllers/customerAuthController');
-const { protectCustomer } = require('../middleware/customerAuthMiddleware');
+const { protectCustomer, optionalCustomerAuth } = require('../middleware/customerAuthMiddleware');
 
 router.post('/register', registerCustomer);
 router.post('/login', loginCustomer);
 router.post('/logout', logoutCustomer);
-router.get('/me', protectCustomer, getCurrentCustomer);
+router.get('/me', optionalCustomerAuth, getCurrentCustomer);
 
 module.exports = router;

@@ -103,13 +103,17 @@ const logoutCustomer = (req, res) => {
   res.clearCookie('customerToken', {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax'
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
   });
 
   res.json({ message: 'Logout successful' });
 };
 
 const getCurrentCustomer = (req, res) => {
+  if (!req.customer) {
+    return res.json({ customer: null });
+  }
+
   res.json({
     customer: {
       id: req.customer._id,
