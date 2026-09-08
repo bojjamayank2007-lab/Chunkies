@@ -2,6 +2,7 @@ const Order = require('../models/Order');
 const MenuItem = require('../models/MenuItem');
 const mongoose = require('mongoose');
 const { validatePaymentVerification } = require('razorpay/dist/utils/razorpay-utils');
+const { sendOrderConfirmation, sendEmail } = require('../utils/emailService');
 
 // @desc    Get all orders
 // @route   GET /api/orders
@@ -77,8 +78,8 @@ const createOrder = async (req, res) => {
       return res.status(400).json({ message: 'Valid order type is required (Dine-in, Takeaway, or Delivery)' });
     }
 
-    if (!['COD', 'Online'].includes(paymentMethod)) {
-      return res.status(400).json({ message: 'Payment method must be COD or Online' });
+    if (!['COD', 'Online', 'Pay at Counter'].includes(paymentMethod)) {
+      return res.status(400).json({ message: 'Payment method must be COD, Online, or Pay at Counter' });
     }
 
     // Order type-specific validation
@@ -86,9 +87,6 @@ const createOrder = async (req, res) => {
       return res.status(400).json({ message: 'Delivery address is required (minimum 5 characters)' });
     }
 
-    if (orderType === 'Dine-in' && (!tableNumber || typeof tableNumber !== 'string' || tableNumber.trim().length === 0)) {
-      return res.status(400).json({ message: 'Table number is required for Dine-in orders' });
-    }
 
     // Items validation
     if (!items || !Array.isArray(items) || items.length === 0) {
@@ -149,7 +147,6 @@ const createOrder = async (req, res) => {
       items: validatedItems,
       orderType,
       address: orderType === 'Delivery' ? address.trim() : undefined,
-      tableNumber: orderType === 'Dine-in' ? tableNumber.trim() : undefined,
       subtotal,
       tax,
       total,
@@ -173,6 +170,9 @@ const createOrder = async (req, res) => {
     }
 
     await order.save();
+
+    // Send email notification (async, non-blocking)
+    sendOrderConfirmation(order.toObject()).catch(err => console.error('Order email error:', err.message));
 
     const orderResponse = {
       ...order.toObject(),
@@ -209,6 +209,35 @@ const getMyOrders = async (req, res) => {
   }
 };
 
+// @desc    Get single order for the authenticated customer
+// @route   GET /api/orders/my-orders/:id
+// @access  Customer only
+const getMyOrderById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid order ID' });
+    }
+
+    const order = await Order.findOne({
+      _id: id,
+      customerId: req.customer.id
+    });
+
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    res.json(order);
+  } catch (error) {
+    res.status(500).json({
+      message: 'Server error',
+      ...(process.env.NODE_ENV === 'development' && { error: error.message })
+    });
+  }
+};
+
 // @desc    Verify Razorpay payment and mark order as paid
 // @route   POST /api/orders/verify-payment
 // @access  Public
@@ -236,6 +265,12 @@ const verifyPayment = async (req, res) => {
 
     if (order.razorpayOrderId !== razorpayOrderId) {
       return res.status(400).json({ message: 'Razorpay order ID does not match' });
+    }
+
+    // Amount check: Razorpay reports amounts in paise. If the payload includes
+    // the amount, it must equal the verified order total (in paise).
+    if (req.body.amount !== undefined && req.body.amount !== order.total * 100) {
+      return res.status(400).json({ message: 'Payment amount mismatch' });
     }
 
     const isValid = validatePaymentVerification(
@@ -292,6 +327,7 @@ const updateOrder = async (req, res) => {
     }
 
     await order.save();
+    sendStatusUpdate(order.toObject()).catch(err => console.error('Status email error:', err.message));
     res.json(order);
   } catch (error) {
     res.status(400).json({
@@ -329,11 +365,34 @@ const deleteOrder = async (req, res) => {
   }
 };
 
+
+const sendStatusUpdate = async (order) => {
+  const restaurantEmail = process.env.NOTIFICATION_EMAIL;
+  const customerEmail = order.email;
+
+  const subject = `Order Status Update - ${order.orderId}`;
+  const html = `
+    <h2>Order Status Update</h2>
+    <p><strong>Order ID:</strong> ${order.orderId}</p>
+    <p><strong>New Status:</strong> ${order.status}</p>
+    <p>Thank you for choosing CHUNKIES.</p>
+  `;
+
+  if (customerEmail) {
+    await sendEmail(customerEmail, subject, html);
+  }
+  if (restaurantEmail && restaurantEmail !== customerEmail) {
+    await sendEmail(restaurantEmail, subject, html);
+  }
+};
+
+
 module.exports = {
   getOrders,
   getOrderById,
   createOrder,
   getMyOrders,
+  getMyOrderById,
   verifyPayment,
   updateOrder,
   deleteOrder

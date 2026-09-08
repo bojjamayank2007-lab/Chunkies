@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Review = require('../models/Review');
 
 // @desc    Get all reviews
@@ -60,6 +61,10 @@ const createReview = async (req, res) => {
 // @access  Public (for demo - should be protected in production)
 const deleteReview = async (req, res) => {
   try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ message: 'Invalid review ID' });
+    }
+
     const review = await Review.findById(req.params.id);
     
     if (!review) {

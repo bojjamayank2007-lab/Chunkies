@@ -9,7 +9,7 @@ const restaurantSchema = new mongoose.Schema({
   },
   nameHindi: {
     type: String,
-    default: 'चुंकीज़',
+    default: 'चंकीज़',
     maxlength: 100
   },
   category: {

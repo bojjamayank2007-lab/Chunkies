@@ -3,25 +3,29 @@ let allMenuItems = [];
 let currentFilter = 'all';
 let currentSearch = '';
 let currentSort = 'default';
+let featuredFilter = 'all';
 
 // Render menu card
 function renderMenuCard(item) {
-    const vegIcon = item.isVeg ? '🟢' : '🔴';
     const vegClass = item.isVeg ? 'veg' : 'non-veg';
+    const vegLabel = item.isVeg ? 'VEG' : 'NON-VEG';
     const featuredBadge = item.isFeatured ? '<div class="menu-card-badge">Featured</div>' : '';
     const stars = renderStars(item.rating);
     const imageUrl = item.image || '';
-    const safeName = item.name.replace(/'/g, '&#39;').replace(/"/g, '&quot;');
+    const safeDisplayName = escapeHTML(item.name || '');
+    const safeDescription = escapeHTML(item.description || '');
+    const safeImageUrl = escapeHTML(item.image || '');
+    const safeAltText = escapeHTML(item.name || '');
     return `
         <div class="menu-card" data-category="${item.category}" data-price="${item.price}" data-popularity="${item.popularity}">
             <div class="menu-card-image">
                 ${featuredBadge}
-                <div class="veg-indicator ${vegClass}">${vegIcon}</div>
-                ${imageUrl ? `<img src="${imageUrl}" alt="${item.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"><i class="fas fa-utensils" style="display: none;"></i>` : '<i class="fas fa-utensils"></i>'}
+                <div class="veg-indicator ${vegClass}"><span class="veg-dot"></span><span class="veg-label">${vegLabel}</span></div>
+                ${safeImageUrl ? `<img src="${safeImageUrl}" alt="${safeAltText}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"><i class="fas fa-utensils" style="display: none;"></i>` : '<i class="fas fa-utensils"></i>'}
             </div>
             <div class="menu-card-content">
-                <h3 class="menu-card-name">${item.name}</h3>
-                <p class="menu-card-description">${item.description}</p>
+                <h3 class="menu-card-name">${safeDisplayName}</h3>
+                <p class="menu-card-description">${safeDescription}</p>
                 <div class="menu-card-footer">
                     <span class="menu-card-price">₹${item.price}</span>
                     <div class="menu-card-rating">
@@ -29,7 +33,7 @@ function renderMenuCard(item) {
                         <span>(${item.rating})</span>
                     </div>
                 </div>
-                <button class="add-to-cart" onclick="addToCart('${item._id}', '${safeName}', ${item.price})">
+                <button class="add-to-cart" data-id="${item._id}" data-name="${safeDisplayName}" data-price="${item.price}">
                     Add to Cart
                 </button>
             </div>
@@ -52,6 +56,33 @@ function renderStars(rating) {
     return stars;
 }
 
+
+
+
+
+function applyFeaturedFilter() {
+    const featuredMenu = document.getElementById('featuredMenu');
+    if (!featuredMenu) return;
+
+    let featuredItems = [];
+
+    if (featuredFilter === 'all') {
+        featuredItems = allMenuItems.filter(item => item.isFeatured);
+    } else if (featuredFilter === 'veg') {
+        featuredItems = allMenuItems.filter(item => item.isVeg);
+    } else if (featuredFilter === 'non-veg') {
+        featuredItems = allMenuItems.filter(item => !item.isVeg);
+    }
+
+    if (featuredItems.length === 0) {
+        featuredMenu.innerHTML = '<p class="empty-cart">No items found.</p>';
+        return;
+    }
+
+    featuredMenu.innerHTML = featuredItems.map(renderMenuCard).join('');
+}
+
+
 // Load menu
 async function loadMenu() {
     const menuGrid = document.getElementById('menuGrid');
@@ -67,8 +98,7 @@ async function loadMenu() {
         }
 
         if (featuredMenu) {
-            const featuredItems = allMenuItems.filter(item => item.isFeatured).slice(0, 4);
-            featuredMenu.innerHTML = featuredItems.map(renderMenuCard).join('');
+            applyFeaturedFilter();
         }
     } catch (error) {
         console.error('Error loading menu:', error);
@@ -118,6 +148,31 @@ function applyFilters() {
     }
 }
 
+// Setup popular filter buttons
+
+
+function setupPopularFilters() {
+    const buttons = document.querySelectorAll('.popular-filter-btn');
+    if (!buttons.length) return;
+
+    buttons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+
+            const filter = btn.dataset.popularFilter;
+            if (!filter) return;
+
+            featuredFilter = filter;
+
+            buttons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            applyFeaturedFilter();
+        });
+    });
+}
+
+
 // Setup filters
 function setupFilters() {
     const filterBtns = document.querySelectorAll('.filter-btn');
@@ -150,8 +205,29 @@ function setupFilters() {
     }
 }
 
+// Event delegation for Add to Cart buttons
+// Buttons are rendered dynamically by loadMenu()/applyFilters() (and the
+// featured menu), so a delegated listener on the document matches
+// .add-to-cart buttons at click time instead of using inline onclick.
+function setupAddToCartDelegation() {
+    document.addEventListener('click', (event) => {
+        const addButton = event.target.closest('.add-to-cart');
+        if (!addButton) return;
+
+        const id = addButton.dataset.id;
+        const name = addButton.dataset.name;
+        const price = Number(addButton.dataset.price);
+
+        if (id && name && !Number.isNaN(price)) {
+            addToCart(id, name, price);
+        }
+    });
+}
+
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     loadMenu();
     setupFilters();
+    setupAddToCartDelegation();
+    setupPopularFilters();
 });

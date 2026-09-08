@@ -1,0 +1,500 @@
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+.btn-secondary {
+    background-color: transparent;
+    color: var(--white);
+    border: 2px solid var(--white);
+}
+
+.btn-secondary:hover {
+    background-color: var(--white);
+    color: var(--bg-dark);
+}
+
+.btn-lg {
+    padding: 16px 36px;
+    font-size: 18px;
+}
+
+.btn-block {
+    display: block;
+    width: 100%;
+}
+
+/* Section Styles */
+section {
+    padding: 80px 0;
+}
+
+.section-title {
+    font-size: 48px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 60px;
+    color: var(--white);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.text-center {
+    text-align: center;
+}
+
+/* Loading State */
+.loading {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-light);
+    font-size: 18px;
+}
+
+/* Page Header */
+.page-header {
+    background: linear-gradient(135deg, var(--bg-darker) 0%, var(--bg-dark) 100%);
+    padding: 100px 0 60px;
+    text-align: center;
+}
+
+.page-header h1 {
+    font-size: 56px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.page-header p {
+    font-size: 20px;
+    color: var(--text-light);
+}
+
+/* Form Styles */
+.form-group {
+    margin-bottom: 24px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--white);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    background-color: var(--bg-card);
+    color: var(--white);
+    font-size: 16px;
+    font-family: inherit;
+    transition: var(--transition);
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: var(--text-light);
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background-color: var(--bg-card);
+    padding: 40px;
+    border-radius: 16px;
+    text-align: center;
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-icon {
+    font-size: 64px;
+    color: var(--success-color);
+    margin-bottom: 24px;
+}
+
+.modal-content h2 {
+    font-size: 28px;
+    margin-bottom: 16px;
+    color: var(--white);
+}
+
+.modal-content p {
+    color: var(--text-light);
+    margin-bottom: 12px;
+}
+
+.order-id {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.order-message {
+    font-size: 18px;
+    color: var(--white);
+}
+
+/* Error Message */
+.error-message {
+    background-color: rgba(244, 67, 54, 0.1);
+    border: 1px solid var(--error-color);
+    color: var(--error-color);
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+@media (max-width: 480px) {
+  .modal-content { padding: 20px; }
+}
+
+
+==============================================
+FILE: ./frontend/customer-login.html
+==============================================
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account — CHUNKIES</title>
+    <meta name="description" content="Sign in or create your CHUNKIES customer account.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/menu.css">
+    <link rel="stylesheet" href="css/footer.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="css/mobile-app.css">
+    <link rel="stylesheet" href="css/final-fixes.css">
+</head>
+<body>
+    <nav class="navbar" id="navbar">
+        <div class="container">
+            <div class="nav-brand"><a href="index.html">CHUNKIES</a><span class="nav-brand-hindi">चुंकीज़</span></div>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="index.html" class="nav-link">HOME</a></li>
+                <li><a href="menu.html" class="nav-link">MENU</a></li>
+                <li><a href="about.html" class="nav-link">ABOUT</a></li>
+                <li><a href="index.html#reviews" class="nav-link">REVIEWS</a></li>
+                <li><a href="contact.html" class="nav-link">CONTACT</a></li>
+            </ul>
+            <div class="nav-actions">
+                <div id="navProfileAction" class="nav-profile-action"></div>
+                <button class="cart-btn" id="cartBtn"><i class="fas fa-shopping-cart"></i><span class="cart-count" id="cartCount">0</span></button>
+                <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+            </div>
+        </div>
+    </nav>
+
+    <section class="page-header"><div class="container"><h1>YOUR ACCOUNT</h1><p>Sign in to track your orders</p></div></section>
+
+    <section class="checkout-section">
+        <div class="container">
+            <div class="checkout-grid">
+                <div class="checkout-form">
+                    <h2>Sign In</h2>
+                    <form id="customerLoginForm">
+                        <div class="form-group"><label for="customerLoginEmail">Email</label><input type="email" id="customerLoginEmail" name="email" required></div>
+                        <div class="form-group"><label for="customerLoginPassword">Password</label><input type="password" id="customerLoginPassword" name="password" minlength="6" required></div>
+                        <p id="customerLoginMessage" aria-live="polite"></p>
+                        <button type="submit" class="btn btn-primary btn-block">SIGN IN</button>
+                    </form>
+                </div>
+                <div class="checkout-form">
+                    <h2>Create Account</h2>
+                    <form id="customerRegisterForm">
+                        <div class="form-group"><label for="customerName">Full Name</label><input type="text" id="customerName" name="name" minlength="2" maxlength="100" required></div>
+                        <div class="form-group"><label for="customerEmail">Email</label><input type="email" id="customerEmail" name="email" required></div>
+                        <div class="form-group"><label for="customerPhone">Phone</label><input type="tel" id="customerPhone" name="phone" maxlength="20" required></div>
+                        <div class="form-group"><label for="customerPassword">Password</label><input type="password" id="customerPassword" name="password" minlength="6" required></div>
+                        <p id="customerRegisterMessage" aria-live="polite"></p>
+                        <button type="submit" class="btn btn-primary btn-block">CREATE ACCOUNT</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="js/api.js"></script>
+    <script src="js/customerAuth.js"></script>
+    <script src="js/navbar.js"></script>
+    <script src="js/cart.js"></script>
+
+
+
+</body>
+</html>
+
+
+==============================================
+FILE: ./frontend/customer-orders.html
+==============================================
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders — CHUNKIES</title>
+    <meta name="description" content="Track your CHUNKIES orders.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/menu.css">
+    <link rel="stylesheet" href="css/footer.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="css/mobile-app.css">
+    <link rel="stylesheet" href="css/final-fixes.css">
+</head>
+<body>
+    <nav class="navbar" id="navbar">
+        <div class="container">
+            <div class="nav-brand"><a href="index.html">CHUNKIES</a><span class="nav-brand-hindi">चुंकीज़</span></div>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="index.html" class="nav-link">HOME</a></li>
+                <li><a href="menu.html" class="nav-link">MENU</a></li>
+                <li><a href="about.html" class="nav-link">ABOUT</a></li>
+                <li><a href="index.html#reviews" class="nav-link">REVIEWS</a></li>
+                <li><a href="contact.html" class="nav-link">CONTACT</a></li>
+            </ul>
+            <div class="nav-actions">
+                <div id="navProfileAction" class="nav-profile-action"></div>
+                <button class="cart-btn" id="cartBtn"><i class="fas fa-shopping-cart"></i><span class="cart-count" id="cartCount">0</span></button>
+                <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+            </div>
+        </div>
+    </nav>
+
+    <section class="page-header"><div class="container"><h1>MY ORDERS</h1><p>Track your CHUNKIES orders</p></div></section>
+
+    <section class="checkout-section">
+        <div class="container">
+            <div class="order-summary">
+                <h2>Welcome, <span id="customerOrdersName">Customer</span></h2>
+                <div class="cart-items" id="customerOrdersList"><p class="empty-cart">Loading your orders...</p></div>
+                <button type="button" class="btn btn-secondary" id="customerLogoutButton">SIGN OUT</button>
+            </div>
+        </div>
+    </section>
+
+    <script src="js/api.js"></script>
+    <script src="js/customerAuth.js"></script>
+    <script src="js/navbar.js"></script>
+    <script src="js/cart.js"></script>
+
+
+
+</body>
+</html>
+
+
+==============================================
+FILE: ./frontend/index.html
+==============================================
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CHUNKIES — Burgers, Chicken & Fast Food in Jogeshwari</title>
+    <meta name="description" content="Discover burgers, crispy chicken, wraps, fries and more at CHUNKIES, Jogeshwari West, Mumbai.">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="CHUNKIES — Burgers, Chicken & Fast Food in Jogeshwari">
+    <meta property="og:description" content="Discover burgers, crispy chicken, wraps, fries and more at CHUNKIES, Jogeshwari West, Mumbai.">
+    <meta property="og:type" content="website">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/hero.css">
+    <link rel="stylesheet" href="css/menu.css">
+    <link rel="stylesheet" href="css/reviews.css">
+    <link rel="stylesheet" href="css/footer.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="css/mobile-app.css">
+    <link rel="stylesheet" href="css/final-fixes.css">
+</head>
+<body class="home">
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="index.html">CHUNKIES</a>
+                <span class="nav-brand-hindi">चुंकीज़</span>
+            </div>
+            
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="index.html" class="nav-link active">HOME</a></li>
+                <li><a href="menu.html" class="nav-link">MENU</a></li>
+                <li><a href="about.html" class="nav-link">ABOUT</a></li>
+                <li><a href="#reviews" class="nav-link">REVIEWS</a></li>
+                <li><a href="contact.html" class="nav-link">CONTACT</a></li>
+            </ul>
+            
+            <div class="nav-actions">
+                <div id="navProfileAction" class="nav-profile-action"></div>
+                <button class="cart-btn" id="cartBtn">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count" id="cartCount">0</span>
+                </button>
+                <button class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">BIG FLAVOUR.<br>BIG CHUNKIES.</h1>
+                <p class="hero-subtitle">Loaded burgers, crispy chicken, wraps and sides made for serious cravings.</p>
+                
+                <div class="hero-buttons">
+                    <a href="menu.html" class="btn btn-primary btn-lg">ORDER NOW</a>
+                    <a href="menu.html" class="btn btn-secondary btn-lg">EXPLORE MENU</a>
+                </div>
+                
+                <div class="hero-badges">
+                    <div class="badge">
+                        <i class="fas fa-star"></i>
+                        <span>4.0 Google Rating</span>
+                    </div>
+                    <div class="badge">
+                        <i class="fas fa-users"></i>
+                        <span>500+ Reviews</span>
+                    </div>
+                    <div class="badge">
+                        <i class="fas fa-rupee-sign"></i>
+                        <span>₹200–₹400 Avg. Spend</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="hero-image">
+                <div class="hero-card floating">
+                    <div class="hero-card-badge">🔥 CUSTOMER FAVOURITE</div>
+                    <h3>Mexican Chicken Burger</h3>
+                    <p>Spicy chicken patty with Mexican spices</p>
+                    <span class="price">₹199</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Promo Section -->
+    <section class="promo">
+        <div class="container">
+            <div class="promo-content">
+                <h2>CRAVING SOMETHING GOOD?</h2>
+                <p>Your next favourite bite is waiting.</p>
+                <a href="menu.html" class="btn btn-primary">ORDER NOW</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Menu Section -->
+    <section class="featured-menu">
+        <div class="container">
+            <h2 class="section-title">POPULAR ITEMS</h2>
+            <div class="menu-grid" id="featuredMenu">
+                <div class="loading">Loading menu...</div>
+            </div>
+            <div class="text-center">
+                <a href="menu.html" class="btn btn-secondary">VIEW FULL MENU</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Reviews Section -->
+    <section class="reviews" id="reviews">
+        <div class="container">
+            <h2 class="section-title">WHAT PEOPLE SAY</h2>
+            <div class="rating-summary">
+                <div class="rating-large">
+                    <span class="rating-number">4.0</span>
+                    <span class="rating-total">/ 5</span>
+                </div>
+                <div class="rating-info">
+                    <p>566+ Google Reviews</p>
+                    <div class="stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="reviews-grid" id="reviewsGrid">
+                <div class="loading">Loading reviews...</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>CHUNKIES</h3>
+                    <p class="footer-hindi">चुंकीज़</p>
+                    <p>Big flavour. Big chunkies.</p>
+                </div>
+                
+                <div class="footer-section">

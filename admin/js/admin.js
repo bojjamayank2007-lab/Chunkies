@@ -83,20 +83,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ========================================
-// Security Helpers
-// ========================================
-
-function escapeHTML(value) {
-    return String(value ?? '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-}
-
-
-// ========================================
 // Check Admin Session
 // ========================================
 
@@ -258,6 +244,43 @@ function initializeAdminDashboard() {
     loadDashboard();
 }
 
+
+function renderPopularItems(orders) {
+    const table = document.getElementById('popularItemsTable');
+    if (!table) return;
+
+    const itemMap = {};
+
+    orders.forEach(order => {
+        (order.items || []).forEach(item => {
+            const name = item.name || 'Unknown Item';
+            if (!itemMap[name]) {
+                itemMap[name] = { name, timesOrdered: 0, quantitySold: 0 };
+            }
+            itemMap[name].timesOrdered += 1;
+            itemMap[name].quantitySold += Number(item.quantity) || 0;
+        });
+    });
+
+    const popularItems = Object.values(itemMap)
+        .sort((a, b) => b.quantitySold - a.quantitySold)
+        .slice(0, 5);
+
+    if (popularItems.length === 0) {
+        table.innerHTML = '<tr><td colspan="3">No items ordered yet</td></tr>';
+        return;
+    }
+
+    table.innerHTML = popularItems.map(item => `
+        <tr>
+            <td>${escapeHTML(item.name)}</td>
+            <td>${escapeHTML(item.timesOrdered)}</td>
+            <td>${escapeHTML(item.quantitySold)}</td>
+        </tr>
+    `).join('');
+}
+
+
 // Load Dashboard
 async function loadDashboard() {
     try {
@@ -276,11 +299,29 @@ async function loadDashboard() {
         const completedOrders = orders.filter(order => order.status === 'Completed');
         const todayRevenue = todayOrders.reduce((sum, order) => sum + order.total, 0);
 
+        const nonCancelledOrders = orders.filter(order => order.status !== 'Cancelled');
+        const totalOrders = nonCancelledOrders.length;
+        const onlineRevenue = nonCancelledOrders
+            .filter(order => order.paymentMethod === 'Online' && order.paymentStatus === 'Paid')
+            .reduce((sum, order) => sum + (Number(order.total) || 0), 0);
+        const codRevenue = nonCancelledOrders
+            .filter(order => order.paymentMethod === 'COD')
+            .reduce((sum, order) => sum + (Number(order.total) || 0), 0);
+
         document.getElementById('todayOrders').textContent = todayOrders.length;
         document.getElementById('pendingOrders').textContent = pendingOrders.length;
         document.getElementById('completedOrders').textContent = completedOrders.length;
         document.getElementById('todayRevenue').textContent = `₹${todayRevenue}`;
         document.getElementById('totalMenuItems').textContent = menuItems.length;
+
+        const totalOrdersEl = document.getElementById('totalOrders');
+        if (totalOrdersEl) totalOrdersEl.textContent = totalOrders;
+        const onlineRevenueEl = document.getElementById('onlineRevenue');
+        if (onlineRevenueEl) onlineRevenueEl.textContent = `₹${onlineRevenue}`;
+        const codRevenueEl = document.getElementById('codRevenue');
+        if (codRevenueEl) codRevenueEl.textContent = `₹${codRevenue}`;
+
+        renderPopularItems(orders);
 
         // Recent orders table
         const recentOrders = orders.slice(0, 5);
@@ -327,6 +368,12 @@ async function loadOrders() {
             const paymentMethod = escapeHTML(order.paymentMethod || 'COD');
             const paymentStatus = escapeHTML(order.paymentStatus || 'Pending');
 
+            const statuses = order.orderType === 'Delivery'
+                ? ['Pending', 'Confirmed', 'Preparing', 'Ready', 'Out for Delivery', 'Completed', 'Cancelled']
+                : ['Pending', 'Confirmed', 'Preparing', 'Ready', 'Completed', 'Cancelled'];
+
+            const statusOptions = statuses.map(status => `<option value="${status}" ${order.status === status ? 'selected' : ''}>${status}</option>`).join('');
+
             return `
         <tr>
             <td>${escapeHTML(order.orderId)}</td>
@@ -341,13 +388,7 @@ async function loadOrders() {
                     class="status-select"
                     onchange="updateOrderStatus('${safeId}', this.value)"
                 >
-                    <option value="Pending" ${order.status === 'Pending' ? 'selected' : ''}>Pending</option>
-                    <option value="Confirmed" ${order.status === 'Confirmed' ? 'selected' : ''}>Confirmed</option>
-                    <option value="Preparing" ${order.status === 'Preparing' ? 'selected' : ''}>Preparing</option>
-                    <option value="Ready" ${order.status === 'Ready' ? 'selected' : ''}>Ready</option>
-                    <option value="Out for Delivery" ${order.status === 'Out for Delivery' ? 'selected' : ''}>Out for Delivery</option>
-                    <option value="Completed" ${order.status === 'Completed' ? 'selected' : ''}>Completed</option>
-                    <option value="Cancelled" ${order.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+                    ${statusOptions}
                 </select>
             </td>
 

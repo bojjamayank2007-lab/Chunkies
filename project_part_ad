@@ -1,0 +1,500 @@
+                        <option value="Drinks">Drinks</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Image URL</label>
+                    <input type="text" id="menuItemImage">
+                </div>
+                <div class="form-group checkbox-group">
+                    <label>
+                        <input type="checkbox" id="menuItemVeg">
+                        Vegetarian
+                    </label>
+                    <label>
+                        <input type="checkbox" id="menuItemFeatured">
+                        Featured
+                    </label>
+                    <label>
+                        <input type="checkbox" id="menuItemAvailable" checked>
+                        Available
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-primary">Save Item</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Order Detail Modal -->
+    <div class="modal" id="orderModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Order Details</h3>
+                <button class="modal-close" onclick="closeOrderModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="orderModalContent"></div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="../frontend/js/api.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+
+</html>
+
+
+==============================================
+FILE: ./admin/js/admin.js
+==============================================
+// ========================================
+// Admin Authentication
+// ========================================
+
+document.addEventListener('DOMContentLoaded', () => {
+    const loginScreen = document.getElementById('loginScreen');
+    const adminApp = document.getElementById('adminApp');
+    const loginForm = document.getElementById('loginForm');
+    const loginError = document.getElementById('loginError');
+    const loginButton = document.getElementById('loginButton');
+
+    if (!loginScreen || !adminApp || !loginForm) {
+        console.error('Admin login elements not found.');
+        return;
+    }
+
+    // Check existing session
+    checkAdminSession();
+
+    // Mobile sidebar navigation
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const sidebar = document.querySelector('.sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+    if (mobileMenuBtn && sidebar) {
+        mobileMenuBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+            if (sidebarOverlay) {
+                sidebarOverlay.classList.toggle('active');
+            }
+        });
+
+        if (sidebarOverlay) {
+            sidebarOverlay.addEventListener('click', () => {
+                sidebar.classList.remove('active');
+                sidebarOverlay.classList.remove('active');
+            });
+        }
+
+        const navBtns = document.querySelectorAll('.nav-btn');
+        navBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                sidebar.classList.remove('active');
+                if (sidebarOverlay) {
+                    sidebarOverlay.classList.remove('active');
+                }
+            });
+        });
+    }
+
+    // Login
+    loginForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        loginError.textContent = '';
+
+        const email = document.getElementById('loginEmail').value.trim();
+        const password = document.getElementById('loginPassword').value;
+
+        if (!email || !password) {
+            loginError.textContent = 'Please enter email and password.';
+            return;
+        }
+
+        loginButton.disabled = true;
+        loginButton.textContent = 'Logging in...';
+
+        try {
+            await api.loginAdmin(email, password);
+
+            showAdminApp();
+            setupLogout();
+
+        } catch (error) {
+            console.error('Login error:', error);
+            loginError.textContent = error.message || 'Invalid email or password';
+
+        } finally {
+            loginButton.disabled = false;
+            loginButton.textContent = 'Login';
+        }
+    });
+});
+
+// ========================================
+// Security Helpers
+// ========================================
+
+function escapeHTML(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+
+// ========================================
+// Check Admin Session
+// ========================================
+
+async function checkAdminSession() {
+    const loginScreen = document.getElementById('loginScreen');
+    const adminApp = document.getElementById('adminApp');
+
+    try {
+        await api.getOrders();
+
+        // Session valid
+        loginScreen.style.display = 'none';
+        adminApp.style.display = '';
+
+        setupLogout();
+        initializeAdminDashboard();
+
+    } catch (error) {
+
+        // Not logged in
+        loginScreen.style.display = 'flex';
+        adminApp.style.display = 'none';
+    }
+}
+
+
+// ========================================
+// Show Admin App
+// ========================================
+
+function showAdminApp() {
+    const loginScreen = document.getElementById('loginScreen');
+    const adminApp = document.getElementById('adminApp');
+
+    if (loginScreen) {
+        loginScreen.style.display = 'none';
+    }
+
+    if (adminApp) {
+        adminApp.style.display = '';
+    }
+
+    initializeAdminDashboard();
+}
+
+
+// ========================================
+// Logout
+// ========================================
+
+function setupLogout() {
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    if (!logoutBtn) {
+        console.warn('Logout button not found.');
+        return;
+    }
+
+    // Prevent duplicate listeners
+    if (logoutBtn.dataset.listenerAttached === 'true') {
+        return;
+    }
+
+    logoutBtn.dataset.listenerAttached = 'true';
+
+    logoutBtn.addEventListener('click', async () => {
+
+        logoutBtn.disabled = true;
+        logoutBtn.textContent = 'Logging out...';
+
+        try {
+            await api.logoutAdmin();
+
+        } catch (error) {
+            console.error('Logout error:', error);
+
+        } finally {
+            showLoginScreen();
+
+            const loginForm = document.getElementById('loginForm');
+
+            if (loginForm) {
+                loginForm.reset();
+            }
+
+            logoutBtn.disabled = false;
+            logoutBtn.textContent = 'Logout';
+        }
+    });
+}
+
+
+// ========================================
+// Show Login Screen
+// ========================================
+
+function showLoginScreen() {
+    const loginScreen = document.getElementById('loginScreen');
+    const adminApp = document.getElementById('adminApp');
+
+    if (loginScreen) {
+        loginScreen.style.display = 'flex';
+    }
+
+    if (adminApp) {
+        adminApp.style.display = 'none';
+    }
+}
+
+
+// ========================================
+// Session Expired
+// ========================================
+
+window.addEventListener('admin-session-expired', () => {
+    showLoginScreen();
+
+    const loginForm = document.getElementById('loginForm');
+
+    if (loginForm) {
+        loginForm.reset();
+    }
+});
+// Admin Dashboard JavaScript
+let allOrders = [];
+let allMenuItems = [];
+let allReviews = [];
+
+// Navigation
+function initializeAdminDashboard() {
+    const navBtns = document.querySelectorAll('.nav-btn');
+    const sections = document.querySelectorAll('.section');
+    const pageTitle = document.getElementById('pageTitle');
+
+    navBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const sectionId = btn.dataset.section;
+
+            // Update active states
+            navBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            sections.forEach(s => s.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+
+            // Update page title
+            pageTitle.textContent = btn.querySelector('span').textContent;
+
+            // Load data for the section
+            if (sectionId === 'dashboard') loadDashboard();
+            if (sectionId === 'orders') loadOrders();
+            if (sectionId === 'menu') loadMenu();
+            if (sectionId === 'reviews') loadReviews();
+            if (sectionId === 'settings') loadSettings();
+        });
+    });
+
+    // Load initial data
+    loadDashboard();
+}
+
+// Load Dashboard
+async function loadDashboard() {
+    try {
+        const [orders, menuItems] = await Promise.all([
+            api.getOrders(),
+            api.getMenu()
+        ]);
+
+        allOrders = orders;
+        allMenuItems = menuItems;
+
+        // Calculate stats
+        const today = new Date().toDateString();
+        const todayOrders = orders.filter(order => new Date(order.createdAt).toDateString() === today);
+        const pendingOrders = orders.filter(order => order.status === 'Pending');
+        const completedOrders = orders.filter(order => order.status === 'Completed');
+        const todayRevenue = todayOrders.reduce((sum, order) => sum + order.total, 0);
+
+        document.getElementById('todayOrders').textContent = todayOrders.length;
+        document.getElementById('pendingOrders').textContent = pendingOrders.length;
+        document.getElementById('completedOrders').textContent = completedOrders.length;
+        document.getElementById('todayRevenue').textContent = `₹${todayRevenue}`;
+        document.getElementById('totalMenuItems').textContent = menuItems.length;
+
+        // Recent orders table
+        const recentOrders = orders.slice(0, 5);
+        document.getElementById('recentOrdersTable').innerHTML = recentOrders.map(order => {
+            const safeStatus = escapeHTML(order.status);
+            const statusClass = order.status
+                .toLowerCase()
+                .replace(/\s+/g, '-')
+                .replace(/[^a-z-]/g, '');
+
+            return `
+        <tr>
+            <td>${escapeHTML(order.orderId)}</td>
+            <td>${escapeHTML(order.customerName)}</td>
+            <td>${escapeHTML(order.phone)}</td>
+            <td>₹${escapeHTML(order.total)}</td>
+            <td>
+                <span class="status-badge status-${statusClass}">
+                    ${safeStatus}
+                </span>
+            </td>
+            <td>${escapeHTML(new Date(order.createdAt).toLocaleDateString())}</td>
+        </tr>
+    `;
+        }).join('');
+    } catch (error) {
+        console.error('Error loading dashboard:', error);
+    }
+}
+
+// Load Orders
+async function loadOrders() {
+    try {
+        const orders = await api.getOrders();
+        allOrders = orders;
+
+        document.getElementById('ordersTable').innerHTML = orders.map(order => {
+            const statusClass = order.status
+                .toLowerCase()
+                .replace(/\s+/g, '-')
+                .replace(/[^a-z-]/g, '');
+
+            const safeId = escapeHTML(order._id);
+            const paymentMethod = escapeHTML(order.paymentMethod || 'COD');
+            const paymentStatus = escapeHTML(order.paymentStatus || 'Pending');
+
+            return `
+        <tr>
+            <td>${escapeHTML(order.orderId)}</td>
+            <td>${escapeHTML(order.customerName)}</td>
+            <td>${escapeHTML(order.phone)}</td>
+            <td>${escapeHTML(order.items.length)} items</td>
+            <td>${escapeHTML(order.orderType)}</td>
+            <td>₹${escapeHTML(order.total)}</td>
+
+            <td>
+                <select
+                    class="status-select"
+                    onchange="updateOrderStatus('${safeId}', this.value)"
+                >
+                    <option value="Pending" ${order.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                    <option value="Confirmed" ${order.status === 'Confirmed' ? 'selected' : ''}>Confirmed</option>
+                    <option value="Preparing" ${order.status === 'Preparing' ? 'selected' : ''}>Preparing</option>
+                    <option value="Ready" ${order.status === 'Ready' ? 'selected' : ''}>Ready</option>
+                    <option value="Out for Delivery" ${order.status === 'Out for Delivery' ? 'selected' : ''}>Out for Delivery</option>
+                    <option value="Completed" ${order.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                    <option value="Cancelled" ${order.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+                </select>
+            </td>
+
+            <td>
+                <div>${paymentMethod}</div>
+                <small>${paymentStatus}</small>
+            </td>
+
+            <td>
+                ${escapeHTML(new Date(order.createdAt).toLocaleDateString())}
+            </td>
+
+            <td>
+                <div class="action-buttons">
+                    <button
+                        class="action-btn"
+                        onclick="viewOrder('${safeId}')"
+                    >
+                        <i class="fas fa-eye"></i>
+                    </button>
+
+                    <button
+                        class="action-btn delete"
+                        onclick="deleteOrder('${safeId}')"
+                    >
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </td>
+        </tr>
+    `;
+        }).join('');
+    } catch (error) {
+        console.error('Error loading orders:', error);
+        document.getElementById('ordersTable').innerHTML = '<tr><td colspan="10">Failed to load orders</td></tr>';
+    }
+}
+
+// Update Order Status
+async function updateOrderStatus(id, status) {
+    try {
+        await api.updateOrder(id, { status });
+        alert('Order status updated successfully');
+        loadOrders();
+    } catch (error) {
+        console.error('Error updating order:', error);
+        alert('Failed to update order status');
+    }
+}
+
+// View Order
+async function viewOrder(id) {
+    try {
+        const order = await api.getOrderById(id);
+
+        const modalContent = document.getElementById('orderModalContent');
+        modalContent.innerHTML = `
+    <div class="order-info">
+        <p><strong>Order ID:</strong> ${escapeHTML(order.orderId)}</p>
+        <p><strong>Customer:</strong> ${escapeHTML(order.customerName)}</p>
+        <p><strong>Phone:</strong> ${escapeHTML(order.phone)}</p>
+        <p><strong>Email:</strong> ${escapeHTML(order.email || 'N/A')}</p>
+        <p><strong>Type:</strong> ${escapeHTML(order.orderType)}</p>
+        <p><strong>Payment Method:</strong> ${escapeHTML(order.paymentMethod || 'COD')}</p>
+        <p><strong>Payment Status:</strong> ${escapeHTML(order.paymentStatus || 'Pending')}</p>
+        ${order.address ? `<p><strong>Address:</strong> ${escapeHTML(order.address)}</p>` : ''}
+        ${order.tableNumber ? `<p><strong>Table:</strong> ${escapeHTML(order.tableNumber)}</p>` : ''}
+        ${order.notes ? `<p><strong>Notes:</strong> ${escapeHTML(order.notes)}</p>` : ''}
+    </div>
+    
+    <h4 style="margin: 20px 0 16px;">Items</h4>
+    ${order.items.map(item => `
+        <div class="order-detail-item">
+            <div class="order-detail-info">
+                <div class="order-detail-name">${escapeHTML(item.name)}</div>
+                <div class="order-detail-qty">Quantity: ${escapeHTML(item.quantity)}</div>
+            </div>
+            <div class="order-detail-price">₹${escapeHTML(item.price * item.quantity)}</div>
+        </div>
+    `).join('')}
+    
+    <div class="order-summary">
+        <div class="order-summary-row">
+            <span>Subtotal</span>
+            <span>₹${escapeHTML(order.subtotal)}</span>
+        </div>
+        <div class="order-summary-row">
+            <span>Tax (5%)</span>
+            <span>₹${escapeHTML(order.tax)}</span>
+        </div>
+        <div class="order-summary-row total">
+            <span>Total</span>
+            <span>₹${escapeHTML(order.total)}</span>
+        </div>
+    </div>
+    
+    <div style="margin-top: 24px;">
+        <p>
+            <strong>Status:</strong>
+            <span class="status-badge status-${escapeHTML(

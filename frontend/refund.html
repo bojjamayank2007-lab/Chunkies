@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Refund & Cancellation Policy — CHUNKIES</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/menu.css">
+    <link rel="stylesheet" href="css/footer.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="css/mobile-app.css">
+    <link rel="stylesheet" href="css/final-fixes.css">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+</head>
+<body>
+    <nav class="navbar" id="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="index.html">CHUNKIES</a>
+                <span class="nav-brand-hindi">चंकीज़</span>
+            </div>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="index.html" class="nav-link">HOME</a></li>
+                <li><a href="menu.html" class="nav-link">MENU</a></li>
+                <li><a href="about.html" class="nav-link">ABOUT</a></li>
+                <li><a href="contact.html" class="nav-link">CONTACT</a></li>
+            </ul>
+            <div class="nav-actions">
+                <div id="navProfileAction" class="nav-profile-action"></div>
+                <button class="cart-btn" id="cartBtn"><i class="fas fa-shopping-cart"></i><span class="cart-count" id="cartCount">0</span></button>
+                <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+            </div>
+        </div>
+    </nav>
+
+    <section class="page-header">
+        <div class="container">
+            <h1>REFUND & CANCELLATION POLICY</h1>
+        </div>
+    </section>
+
+    <section class="checkout-section">
+        <div class="container">
+            <div class="order-summary" style="max-width:800px;margin:0 auto;">
+                
+    <h2>Cancellations</h2>
+    <p>You may cancel an order before it is confirmed by the restaurant. Once the order status changes to "Preparing", cancellation may not be possible.</p>
+    <h3>Refunds</h3>
+    <p>Refunds are issued for cancelled orders or if the restaurant fails to deliver your order. Refunds for online payments are credited back to the original payment method within 5-7 business days.</p>
+    <h3>Cash on Delivery</h3>
+    <p>For COD orders, no refund is required unless payment was collected in advance or the order was not delivered.</p>
+    <h3>Quality Issues</h3>
+    <p>If you receive an incorrect or damaged item, contact us within 30 minutes of delivery with your order ID and photo evidence. We will review and resolve on a case-by-case basis.</p>
+    <h3>Contact</h3>
+    <p>For refund or cancellation requests, contact support@chunkies.com or call 090040 94979.</p>
+    
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>CHUNKIES</h3>
+                    <p class="footer-hindi">चंकीज़</p>
+                    <p>Big flavour. Big chunkies.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p><i class="fas fa-map-marker-alt"></i> Jogeshwari West, Mumbai</p>
+                    <p><i class="fas fa-phone"></i> 090040 94979</p>
+                    <p><i class="fas fa-clock"></i> Open 24 Hours</p>
+                </div>
+                <div class="footer-section quick-links-footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="menu.html">Menu</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 CHUNKIES. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <div class="cart-overlay" id="cartOverlay"></div>
+    <div class="cart-drawer" id="cartDrawer">
+        <div class="cart-content">
+            <div class="cart-header">
+                <h3>Your Cart</h3>
+                <button class="cart-close" id="cartClose"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="cart-items" id="cartItems"><p class="empty-cart">Your cart is empty</p></div>
+            <div class="cart-footer">
+                <div class="cart-total"><span>Total:</span><span id="cartTotal">₹0</span></div>
+                <a href="cart.html" class="btn btn-primary btn-block">PROCEED TO CHECKOUT</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/customerAuth.js"></script>
+    <script src="js/navbar.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/page-transitions.js"></script>
+</body>
+</html>

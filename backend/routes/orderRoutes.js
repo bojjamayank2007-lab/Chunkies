@@ -6,6 +6,7 @@ const {
   getOrderById,
   createOrder,
   getMyOrders,
+  getMyOrderById,
   verifyPayment,
   updateOrder,
   deleteOrder
@@ -18,6 +19,9 @@ const { protectCustomer, optionalCustomerAuth } = require('../middleware/custome
 router.post('/', optionalCustomerAuth, createOrder);
 router.post('/verify-payment', verifyPayment);
 router.get('/my-orders', protectCustomer, getMyOrders);
+
+// Customer only: view a single one of their own orders
+router.get('/my-orders/:id', protectCustomer, getMyOrderById);
 
 // Admin only: view all orders
 router.get('/', protect, getOrders);

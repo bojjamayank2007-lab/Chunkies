@@ -1,16 +1,6 @@
 // Reviews functionality
 let selectedRating = 0;
 
-// XSS protection helper
-function escapeHTML(value) {
-    return String(value ?? '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-}
-
 // Render review card
 function renderReviewCard(review) {
     const stars = renderStars(review.rating);

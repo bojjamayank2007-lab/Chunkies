@@ -1,0 +1,500 @@
+                
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="menu.html">Menu</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p><i class="fas fa-map-marker-alt"></i> Jogeshwari West, Mumbai</p>
+                    <p><i class="fas fa-phone"></i> 090040 94979</p>
+                    <p><i class="fas fa-clock"></i> Open 24 Hours</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Services</h4>
+                    <p>Dine-in</p>
+                    <p>Takeaway</p>
+                    <p>Delivery</p>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 CHUNKIES. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Cart Drawer -->
+    <div class="cart-overlay" id="cartOverlay"></div>
+    <div class="cart-drawer" id="cartDrawer">
+        <div class="cart-content">
+            <div class="cart-header">
+                <h3>Your Cart</h3>
+                <button class="cart-close" id="cartClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="cart-items" id="cartItems">
+                <p class="empty-cart">Your cart is empty</p>
+            </div>
+            <div class="cart-footer">
+                <div class="cart-total">
+                    <span>Total:</span>
+                    <span id="cartTotal">₹0</span>
+                </div>
+                <a href="cart.html" class="btn btn-primary btn-block">PROCEED TO CHECKOUT</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Sticky Buttons -->
+    <!-- JavaScript -->
+    <script src="js/api.js"></script>
+    <script src="js/customerAuth.js"></script>
+    <script src="js/navbar.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/restaurant.js"></script>
+
+
+
+</body>
+</html>
+
+
+==============================================
+FILE: ./frontend/css/final-fixes.css
+==============================================
+/* ============================================
+   CHUNKIES — FINAL OVERRIDES (loaded last)
+   ============================================
+   The forced navbar height / hero spacing / hamburger
+   position overrides were removed to restore the original
+   clean layout (see navbar.css, hero.css, responsive.css
+   and mobile-app.css).
+
+   This file is intentionally left with no active rules
+   but is kept so the existing <link> tags keep working.
+   Any genuinely-needed final override can be added here
+   and it will win over all previous rules.
+   ============================================ */
+
+/* ============================================
+   CUSTOMER PROFILE MENU (NAVBAR)
+   Icon-only button when logged in; dropdown with
+   full name, email, "My Orders" link and Logout.
+   ============================================ */
+.profile-menu {
+    position: relative;
+}
+
+.profile-icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 6px;
+    background: none;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    color: var(--white);
+    font-size: 26px;
+    transition: var(--transition);
+}
+
+.profile-icon-btn:hover {
+    color: var(--primary-color);
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.profile-dropdown {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    min-width: 220px;
+    padding: 6px 0;
+    background: #141414;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+    z-index: 1500;
+    display: none;
+}
+
+.profile-dropdown.active {
+    display: block;
+}
+
+.profile-dropdown-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    margin-bottom: 4px;
+}
+
+.profile-dropdown-name {
+    display: block;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--white);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.profile-dropdown-email {
+    display: block;
+    font-size: 12px;
+    color: var(--text-light);
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.profile-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 16px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--white);
+    text-align: left;
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.profile-dropdown-item i {
+    width: 18px;
+    text-align: center;
+    color: var(--primary-color);
+    flex-shrink: 0;
+}
+
+.profile-dropdown-item:hover {
+    background-color: rgba(255, 255, 255, 0.06);
+    color: var(--primary-color);
+}
+
+.profile-dropdown-logout {
+    margin-top: 4px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--error-color);
+}
+
+.profile-dropdown-logout:hover {
+    background-color: rgba(244, 67, 54, 0.08);
+    color: #ff7d6e;
+}
+
+@media (max-width: 480px) {
+    .profile-dropdown {
+        right: -8px;
+        min-width: 200px;
+    }
+}
+
+/* ============================================
+   MOBILE/TABLET: PROFILE DROPDOWN VISIBILITY
+   mobile-app.css forces overflow:hidden on the
+   navbar containers at ≤768px, which clips the
+   absolutely positioned profile dropdown. The
+   .has-profile-menu class is added by navbar.js
+   only when a customer is logged in, so the
+   logged-out Login button and the desktop layout
+   are completely unaffected.
+   ============================================ */
+@media (max-width: 768px) {
+  html body .nav-actions.has-profile-menu {
+    overflow: visible !important;
+  }
+
+  html body #navProfileAction.has-profile-menu {
+    overflow: visible !important;
+    max-width: none !important;
+  }
+
+  html body #profileDropdown {
+    z-index: 4000 !important;
+  }
+}
+
+
+==============================================
+FILE: ./frontend/css/footer.css
+==============================================
+/* Footer */
+.footer {
+    background-color: var(--bg-darker);
+    padding: 60px 0 24px;
+    border-top: 1px solid var(--border-color);
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 40px;
+    margin-bottom: 40px;
+}
+
+.footer-brand h3 {
+    font-size: 32px;
+    font-weight: 800;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.footer-hindi {
+    font-size: 18px;
+    color: var(--text-light);
+    margin-bottom: 16px;
+}
+
+.footer-brand p {
+    color: var(--text-light);
+    font-size: 14px;
+}
+
+.footer-section h4 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: var(--white);
+}
+
+.footer-section ul {
+    list-style: none;
+}
+
+.footer-section ul li {
+    margin-bottom: 12px;
+}
+
+.footer-section ul li a {
+    color: var(--text-light);
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.footer-section ul li a:hover {
+    color: var(--primary-color);
+}
+
+.footer-section p {
+    color: var(--text-light);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.footer-section p i {
+    color: var(--primary-color);
+}
+
+.footer-bottom {
+    text-align: center;
+    padding-top: 24px;
+    border-top: 1px solid var(--border-color);
+}
+
+.footer-bottom p {
+    color: var(--text-light);
+    font-size: 14px;
+}
+
+/* Mobile Sticky Buttons */
+.mobile-sticky {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: var(--bg-card);
+    padding: 12px;
+    gap: 12px;
+    z-index: 999;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.mobile-call,
+.mobile-order {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 12px;
+    background-color: var(--primary-color);
+    color: var(--white);
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.mobile-call:hover,
+.mobile-order:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+.mobile-call i,
+.mobile-order i {
+    font-size: 20px;
+}
+
+.mobile-call span,
+.mobile-order span {
+    font-size: 12px;
+}
+
+@media (max-width: 768px) {
+  body { padding-bottom: 80px; }
+  footer { padding-bottom: 80px; }
+}
+
+
+==============================================
+FILE: ./frontend/css/hero.css
+==============================================
+/* Hero Section */
+.hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    background: linear-gradient(135deg, var(--bg-darker) 0%, var(--bg-dark) 50%, #1a0f0a 100%);
+    padding-top: 100px;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 30% 50%, rgba(255, 107, 53, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.hero .container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+}
+
+.hero-content {
+    z-index: 1;
+}
+
+.hero-title {
+    font-size: 72px;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 24px;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    background: linear-gradient(135deg, var(--white) 0%, var(--primary-color) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.hero-subtitle {
+    font-size: 20px;
+    color: var(--text-light);
+    margin-bottom: 40px;
+    line-height: 1.6;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 40px;
+}
+
+.hero-badges {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
+.badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background-color: var(--bg-card);
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--white);
+    border: 1px solid var(--border-color);
+}
+
+.badge i {
+    color: var(--primary-color);
+}
+
+.hero-image {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.hero-card {
+    background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-card-hover) 100%);
+    padding: 32px;
+    border-radius: 20px;
+    max-width: 320px;
+    text-align: center;
+    border: 1px solid var(--border-color);
+    position: relative;
+}
+
+.hero-card.floating {
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+.hero-card-badge {
+    display: inline-block;
+    background-color: var(--primary-color);
+    color: var(--white);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+}
+
+.hero-card h3 {
+    font-size: 24px;

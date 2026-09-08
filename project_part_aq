@@ -1,0 +1,500 @@
+  }
+
+  html body .cart-overlay.active {
+    display: block !important;
+  }
+
+  /* Bottom app-like navigation */
+  body::after {
+    content: "";
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: #0d0d0d;
+    z-index: 5000;
+    pointer-events: none;
+  }
+
+  .bottom-nav {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 60px !important;
+    background: #0d0d0d !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-around !important;
+    z-index: 6000 !important;
+    border-top: 1px solid #222 !important;
+    padding: 0 8px !important;
+  }
+
+  .bottom-nav a {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 4px !important;
+    color: #aaa !important;
+    text-decoration: none !important;
+    font-size: 11px !important;
+    flex: 1 !important;
+    height: 100% !important;
+  }
+
+  .bottom-nav a.active {
+    color: #ff6b00 !important;
+  }
+
+  .bottom-nav a span {
+    font-size: 20px !important;
+    line-height: 1 !important;
+  }
+
+  /* Checkout and forms */
+  .checkout-form,
+  .order-summary,
+  .checkout-section {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 16px !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 48px !important;
+    box-sizing: border-box !important;
+  }
+
+  .btn-block {
+    width: 100% !important;
+  }
+
+  /* Cards */
+  .menu-card,
+  .review-card,
+  .highlight,
+  .service-card,
+  .order-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  /* Footer */
+  footer {
+    padding-bottom: 20px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar .container {
+    padding: 0 8px !important;
+  }
+
+  .nav-brand a {
+    font-size: 18px !important;
+  }
+
+  .bottom-nav a {
+    font-size: 10px !important;
+  }
+
+  .bottom-nav a span {
+    font-size: 18px !important;
+  }
+}
+
+/* ============================================
+   MOBILE CHECKOUT STACKING + NAV SPACING FIX
+   ============================================ */
+@media (max-width: 768px) {
+
+  /* Stack all checkout-related sections vertically */
+  .checkout-container,
+  .checkout-layout,
+  .checkout-grid,
+  .checkout-row,
+  .checkout-wrapper,
+  .checkout-section,
+  .checkout-form,
+  .order-summary,
+  .form-row {
+    flex-direction: column !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    margin-bottom: 16px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Ensure inner form fields and order lines are full width */
+  .checkout-form .form-group,
+  .checkout-form .form-row,
+  .order-summary .order-item,
+  .order-summary .order-summary-line,
+  .order-summary .order-total,
+  .order-summary table,
+  .order-summary tbody,
+  .order-summary tr,
+  .order-summary td {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Make order summary and delivery details stack one after another */
+  .checkout-form,
+  .order-summary {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  /* Add space between navbar and page content */
+  main,
+  .page-header,
+  .checkout-section,
+  .checkout-form,
+  .order-summary {
+    margin-top: 16px !important;
+    padding-top: 0 !important;
+  }
+
+  .navbar {
+    margin-bottom: 0 !important;
+  }
+
+  /* Prevent any flex child from forcing horizontal overflow */
+  body * {
+    min-width: 0 !important;
+  }
+}
+
+/* ============================================
+   CHECKOUT PAGE: ORDER SUMMARY ON TOP
+   AND FORM BELOW ON MOBILE
+   ============================================ */
+@media (max-width: 768px) {
+
+  .checkout-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .checkout-grid .order-summary {
+    order: 1 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .checkout-grid .checkout-form {
+    order: 2 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .checkout-section {
+    margin-top: 16px !important;
+    padding-top: 0 !important;
+  }
+}
+
+/* ============================================
+   FINAL CART & CHECKOUT STRUCTURE (MOBILE ONLY)
+   ============================================ */
+@media (max-width: 768px) {
+
+  /* --- Cart Drawer: Bottom Sheet --- */
+  html body .cart-drawer {
+    position: fixed !important;
+    top: auto !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 85vh !important;
+    transform: translateY(100%) !important;
+    transition: transform 0.3s ease !important;
+    border-radius: 20px 20px 0 0 !important;
+    background: #141414 !important;
+    z-index: 4000 !important;
+    overflow-y: auto !important;
+  }
+
+  html body .cart-drawer.active {
+    transform: translateY(0) !important;
+  }
+
+  html body .cart-overlay {
+    display: none !important;
+    position: fixed !important;
+    inset: 0 !important;
+    background: rgba(0,0,0,0.6) !important;
+    z-index: 3900 !important;
+  }
+
+  html body .cart-overlay.active {
+    display: block !important;
+  }
+
+  /* Optional drag handle using ::before */
+  html body .cart-drawer::before {
+    content: "" !important;
+    display: block !important;
+    width: 40px !important;
+    height: 4px !important;
+    background: #444 !important;
+    border-radius: 4px !important;
+    margin: 10px auto 14px !important;
+  }
+
+  /* --- Checkout: Order Summary above Delivery Details --- */
+  html body .checkout-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  html body .checkout-grid .order-summary {
+    order: 1 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  html body .checkout-grid .checkout-form {
+    order: 2 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Space between navbar and body content */
+  main,
+  .page-header,
+  .checkout-section,
+  .checkout-form,
+  .order-summary {
+    margin-top: 16px !important;
+    padding-top: 0 !important;
+  }
+
+  /* Ensure forms and sections don't overflow */
+  .checkout-form,
+  .order-summary,
+  .form-group,
+  .form-row {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 48px !important;
+    box-sizing: border-box !important;
+  }
+}
+
+/* ============================================
+   PAGE HEADER BELOW FIXED NAVBAR
+   Applies to all pages except home
+   ============================================ */
+
+main,
+.page-header,
+.about-section,
+.contact-section,
+.checkout-section,
+.auth-section,
+.auth-container,
+.orders-section,
+.orders-container,
+.customer-account-section {
+  margin-top: 80px !important;
+  padding-top: 0 !important;
+}
+
+/* ============================================
+   FORCE CONTENT BELOW FIXED NAVBAR
+   (all pages except home)
+   ============================================ */
+@media (max-width: 768px) {
+  body:not(.home) .page-header,
+  body:not(.home) .checkout-section,
+  body:not(.home) .about-section,
+  body:not(.home) .contact-section,
+  body:not(.home) .auth-section,
+  body:not(.home) .orders-section,
+  body:not(.home) main {
+    margin-top: 80px !important;
+    padding-top: 0 !important;
+  }
+
+  /* Also handle customer login/orders pages that reuse checkout-section */
+  body:not(.home) section.checkout-section {
+    margin-top: 80px !important;
+  }
+}
+
+@media (min-width: 769px) {
+  body:not(.home) .page-header,
+  body:not(.home) .checkout-section,
+  body:not(.home) .about-section,
+  body:not(.home) .contact-section,
+  body:not(.home) main {
+    margin-top: 90px !important;
+    padding-top: 0 !important;
+  }
+}
+
+/* ============================================
+   MORE GAP BELOW FIXED NAVBAR
+   ============================================ */
+@media (max-width: 768px) {
+  body:not(.home) .page-header,
+  body:not(.home) .checkout-section,
+  body:not(.home) .about-section,
+  body:not(.home) .contact-section,
+  body:not(.home) .auth-section,
+  body:not(.home) .orders-section,
+  body:not(.home) main {
+    margin-top: 140px !important;
+  }
+}
+
+@media (min-width: 769px) {
+  body:not(.home) .page-header,
+  body:not(.home) .checkout-section,
+  body:not(.home) .about-section,
+  body:not(.home) .contact-section,
+  body:not(.home) main {
+    margin-top: 160px !important;
+  }
+}
+
+/* ============================================
+   ABOUT PAGE VERTICAL ALIGNMENT (MOBILE)
+   ============================================ */
+@media (max-width: 768px) {
+  .about-content {
+    flex-direction: column !important;
+    gap: 24px !important;
+  }
+
+  .about-text,
+  .about-image {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .about-highlights {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  .about-highlights .highlight,
+  .about-highlights .service-card {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .about-section {
+    margin-top: 140px !important;
+  }
+}
+
+/* ABSOLUTE LAST RESORT: ABOUT SECTION VERTICAL */
+@media (max-width: 768px) {
+  html body .about-section .about-content {
+    display: block !important;
+    grid-template-columns: none !important;
+  }
+
+  html body .about-section .about-text {
+    width: 100% !important;
+    margin-bottom: 24px !important;
+  }
+
+  html body .about-section .about-image {
+    width: 100% !important;
+  }
+
+  html body .about-section .about-highlights {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ABOUT FORCE VERTICAL */
+@media (max-width: 768px) {
+  html body .about-content {
+    display: block !important;
+    grid-template-columns: none !important;
+  }
+
+  html body .about-text {
+    width: 100% !important;
+    display: block !important;
+    margin-bottom: 32px !important;
+  }
+
+  html body .about-image {
+    width: 100% !important;
+    display: block !important;
+  }
+
+  html body .about-highlights {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  html body .about-highlights .highlight {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+/* ABOUT PAGE: OUR SERVICES VERTICAL */
+@media (max-width: 768px) {
+  html body .services-grid,
+  html body .about-section .services-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  html body .services-grid .service-card,
+  html body .about-section .service-card {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+/* REMOVE BLACK STICKY FOOTER / MOBILE STICKY BAR */
+.mobile-sticky,
+.mobile-call,
+.mobile-order {
+  display: none !important;
+}
+
+/* FINAL: REMOVE ANY MOBILE STICKY BLACK BAR */
+.mobile-sticky,

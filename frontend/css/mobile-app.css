@@ -1,26 +1,50 @@
 /* =====================================================
-   CHUNKIES MOBILE APP-LIKE UI OVERRIDE
-   Applies only to screens ≤ 768px.
-   Desktop/laptop layout remains untouched.
+   CHUNKIES — MOBILE & TABLET STYLES (≤768px)
+   -----------------------------------------------------
+   Applies ONLY to screens 768px wide or less (plus a small
+   ≤480px refinement pass). Desktop/laptop layout above 768px
+   is untouched and comes from style.css, navbar.css, hero.css,
+   responsive.css and footer.css.
+
+   Base mobile layout (grids collapsing to one column, spacing,
+   paddings) is already provided by responsive.css. This file
+   only holds the app-like behaviours that override those
+   defaults: the compact navbar, slide-in menu, bottom-sheet
+   cart drawer and the checkout/about stacking.
+
+   The customer profile dropdown styles live in final-fixes.css
+   (loaded last), including the .has-profile-menu overflow fix
+   for ≤768px — so they are NOT duplicated here.
    ===================================================== */
 
+/* -----------------------------------------------------
+   1) Horizontal overflow prevention
+   ----------------------------------------------------- */
 @media (max-width: 768px) {
 
-  /* Prevent horizontal scroll globally */
-  html, body {
+  html,
+  body {
     overflow-x: hidden !important;
     max-width: 100% !important;
   }
 
-  /* Add space for bottom nav */
-  body {
-    padding-bottom: 72px !important;
+  /* Let flex/grid children shrink so nothing forces
+     horizontal scroll (long names, prices, tables…). */
+  body * {
+    min-width: 0 !important;
   }
 
-  /* Navbar: clean flex layout — brand left, nav actions right.
-     No absolute positioning and no forced heights; base sizing
-     from navbar.css is left untouched. (Overrides responsive.css's
-     stacked mobile fallback for the container.) */
+  /* Legacy sticky-bar helpers kept inert — the sticky bar
+     itself was removed (see footer.css). */
+  .mobile-sticky,
+  .mobile-call,
+  .mobile-order {
+    display: none !important;
+  }
+
+  /* -----------------------------------------------------
+     2) Mobile navbar — brand left, actions right
+     ----------------------------------------------------- */
   .navbar .container {
     flex-direction: row !important;
     flex-wrap: nowrap !important;
@@ -32,11 +56,12 @@
   }
 
   .nav-brand {
-    flex: 0 1 auto !important;
+    flex: 0 0 auto !important;
     min-width: 0 !important;
-    max-width: 55% !important;
-    display: flex !important;
-    flex-direction: column !important;
+    max-width: 40% !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
   }
 
   .nav-brand a {
@@ -46,21 +71,106 @@
     text-overflow: ellipsis !important;
   }
 
-  /* Hamburger — mobile only, sits naturally at the end of
-     .nav-actions (right side). No absolute positioning. */
+  /* Right-aligned action group (profile/login, cart, hamburger) */
+  .nav-actions {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 6px !important;
+    margin-left: auto !important;
+    max-width: 55% !important;
+    overflow: hidden !important;
+    flex-shrink: 0 !important;
+  }
+
+  .nav-actions > * {
+    margin: 0 !important;
+  }
+
+  /* Logged-out Login button stays compact */
+  #navProfileAction {
+    flex: 0 1 auto !important;
+    min-width: 0 !important;
+    max-width: 100px !important;
+    overflow: hidden !important;
+  }
+
+  #navProfileAction .nav-login-btn {
+    padding: 8px 10px !important;
+    font-size: 12px !important;
+    white-space: nowrap !important;
+  }
+
+  .nav-profile-area {
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+  }
+
+  .nav-profile-area .customer-name {
+    display: inline-block !important;
+    max-width: 60px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  /* -----------------------------------------------------
+     3) Hamburger — visible ≤768px only, 44px touch target,
+        three white lines, no absolute positioning.
+     ----------------------------------------------------- */
   #hamburger {
     display: flex !important;
+    flex: 0 0 auto !important;
     flex-direction: column !important;
     justify-content: center !important;
     align-items: center !important;
     gap: 5px !important;
-    padding: 10px !important;
-    min-height: 44px !important;
+    position: static !important;
+    width: 44px !important;
+    height: 44px !important;
     min-width: 44px !important;
+    min-height: 44px !important;
+    padding: 10px !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
   }
 
-  /* Slide-in nav menu */
-  html body #navMenu {
+  #hamburger span {
+    display: block !important;
+    width: 24px !important;
+    height: 2px !important;
+    background: #fff !important;
+    border-radius: 2px !important;
+  }
+
+  /* Cart button — 44px touch target; position stays relative
+     so the .cart-count badge (navbar.css) stays anchored in
+     the top-right corner of the icon. */
+  #cartBtn {
+    position: relative !important;
+    display: flex !important;
+    flex: 0 0 auto !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+  }
+}
+/* -----------------------------------------------------
+   4) Slide-in nav menu — fixed, from the left, dark
+   ----------------------------------------------------- */
+@media (max-width: 768px) {
+
+  #navMenu {
     position: fixed !important;
     top: 0 !important;
     left: -100% !important;
@@ -81,18 +191,18 @@
     overflow-y: auto !important;
   }
 
-  html body #navMenu.active {
+  #navMenu.active {
     left: 0 !important;
   }
 
-  html body #navMenu li {
+  #navMenu li {
     width: 100% !important;
     max-width: 100% !important;
     list-style: none !important;
     margin: 0 !important;
   }
 
-  html body #navMenu li a {
+  #navMenu li a {
     display: block !important;
     width: 100% !important;
     font-size: 18px !important;
@@ -101,271 +211,12 @@
     text-decoration: none !important;
   }
 
-  /* Nav actions area — right-aligned group (login/profile, cart, hamburger) */
-  .nav-actions {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    gap: 8px !important;
-    flex: 0 0 auto !important;
-    margin-left: auto !important;
-  }
-
-  .nav-actions > * {
-    margin: 0 !important;
-  }
-
-  /* Hide old bottom sticky call/order bar */
-  .mobile-sticky,
-  .mobile-call,
-  .mobile-order {
-    display: none !important;
-  }
-
-  /* Cart drawer full-width */
-  html body .cart-drawer {
-    position: fixed !important;
-    top: 0 !important;
-    right: -100% !important;
-    left: auto !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    height: 100vh !important;
-    transform: none !important;
-    transition: right 0.3s ease !important;
-    z-index: 4000 !important;
-    background: #141414 !important;
-  }
-
-  html body .cart-drawer.active {
-    right: 0 !important;
-  }
-
-  html body .cart-overlay {
-    display: none !important;
-    position: fixed !important;
-    inset: 0 !important;
-    background: rgba(0,0,0,0.6) !important;
-    z-index: 3900 !important;
-  }
-
-  html body .cart-overlay.active {
-    display: block !important;
-  }
-
-  /* Bottom app-like navigation */
-  body::after {
-    content: "";
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 60px;
-    background: #0d0d0d;
-    z-index: 5000;
-    pointer-events: none;
-  }
-
-  .bottom-nav {
-    position: fixed !important;
-    bottom: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    height: 60px !important;
-    background: #0d0d0d !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-around !important;
-    z-index: 6000 !important;
-    border-top: 1px solid #222 !important;
-    padding: 0 8px !important;
-  }
-
-  .bottom-nav a {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 4px !important;
-    color: #aaa !important;
-    text-decoration: none !important;
-    font-size: 11px !important;
-    flex: 1 !important;
-    height: 100% !important;
-  }
-
-  .bottom-nav a.active {
-    color: #ff6b00 !important;
-  }
-
-  .bottom-nav a span {
-    font-size: 20px !important;
-    line-height: 1 !important;
-  }
-
-  /* Checkout and forms */
-  .checkout-form,
-  .order-summary,
-  .checkout-section {
-    width: 100% !important;
-    max-width: 100% !important;
-    padding: 16px !important;
-    margin: 0 !important;
-    box-sizing: border-box !important;
-  }
-
-  .form-group input,
-  .form-group select,
-  .form-group textarea {
-    width: 100% !important;
-    max-width: 100% !important;
-    min-height: 48px !important;
-    box-sizing: border-box !important;
-  }
-
-  .btn-block {
-    width: 100% !important;
-  }
-
-  /* Cards */
-  .menu-card,
-  .review-card,
-  .highlight,
-  .service-card,
-  .order-card {
-    width: 100% !important;
-    max-width: 100% !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-  }
-
-  /* Footer */
-  footer {
-    padding-bottom: 20px !important;
-  }
-}
-
-@media (max-width: 480px) {
-  .navbar .container {
-    padding: 0 8px !important;
-  }
-
-  .nav-brand a {
-    font-size: 18px !important;
-  }
-
-  .bottom-nav a {
-    font-size: 10px !important;
-  }
-
-  .bottom-nav a span {
-    font-size: 18px !important;
-  }
-}
-
-/* ============================================
-   MOBILE CHECKOUT STACKING + NAV SPACING FIX
-   ============================================ */
-@media (max-width: 768px) {
-
-  /* Stack all checkout-related sections vertically */
-  .checkout-container,
-  .checkout-layout,
-  .checkout-grid,
-  .checkout-row,
-  .checkout-wrapper,
-  .checkout-section,
-  .checkout-form,
-  .order-summary,
-  .form-row {
-    flex-direction: column !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-    margin-bottom: 16px !important;
-    box-sizing: border-box !important;
-  }
-
-  /* Ensure inner form fields and order lines are full width */
-  .checkout-form .form-group,
-  .checkout-form .form-row,
-  .order-summary .order-item,
-  .order-summary .order-summary-line,
-  .order-summary .order-total,
-  .order-summary table,
-  .order-summary tbody,
-  .order-summary tr,
-  .order-summary td {
-    width: 100% !important;
-    max-width: 100% !important;
-  }
-
-  /* Make order summary and delivery details stack one after another */
-  .checkout-form,
-  .order-summary {
-    display: flex !important;
-    flex-direction: column !important;
-  }
-
-  /* Add space between navbar and page content */
-  main,
-  .page-header,
-  .checkout-section,
-  .checkout-form,
-  .order-summary {
-    margin-top: 16px !important;
-    padding-top: 0 !important;
-  }
-
-  .navbar {
-    margin-bottom: 0 !important;
-  }
-
-  /* Prevent any flex child from forcing horizontal overflow */
-  body * {
-    min-width: 0 !important;
-  }
-}
-
-/* ============================================
-   CHECKOUT PAGE: ORDER SUMMARY ON TOP
-   AND FORM BELOW ON MOBILE
-   ============================================ */
-@media (max-width: 768px) {
-
-  .checkout-grid {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 16px !important;
-    width: 100% !important;
-    max-width: 100% !important;
-  }
-
-  .checkout-grid .order-summary {
-    order: 1 !important;
-    width: 100% !important;
-    max-width: 100% !important;
-  }
-
-  .checkout-grid .checkout-form {
-    order: 2 !important;
-    width: 100% !important;
-    max-width: 100% !important;
-  }
-
-  .checkout-section {
-    margin-top: 16px !important;
-    padding-top: 0 !important;
-  }
-}
-
-/* ============================================
-   FINAL CART & CHECKOUT STRUCTURE (MOBILE ONLY)
-   ============================================ */
-@media (max-width: 768px) {
-
-  /* --- Cart Drawer: Bottom Sheet --- */
+  /* -----------------------------------------------------
+     5) Cart drawer — full-width bottom sheet
+        (toggled with .active by cart.js)
+     ----------------------------------------------------- */
+  /* Specific selectors keep `html body` to beat the
+     equivalent overrides in responsive.css. */
   html body .cart-drawer {
     position: fixed !important;
     top: auto !important;
@@ -387,19 +238,7 @@
     transform: translateY(0) !important;
   }
 
-  html body .cart-overlay {
-    display: none !important;
-    position: fixed !important;
-    inset: 0 !important;
-    background: rgba(0,0,0,0.6) !important;
-    z-index: 3900 !important;
-  }
-
-  html body .cart-overlay.active {
-    display: block !important;
-  }
-
-  /* Optional drag handle using ::before */
+  /* Grab handle at the top of the sheet */
   html body .cart-drawer::before {
     content: "" !important;
     display: block !important;
@@ -410,8 +249,23 @@
     margin: 10px auto 14px !important;
   }
 
-  /* --- Checkout: Order Summary above Delivery Details --- */
-  html body .checkout-grid {
+  /* Overlay hidden unless the drawer is open */
+  html body .cart-overlay {
+    display: none !important;
+    position: fixed !important;
+    inset: 0 !important;
+    background: rgba(0, 0, 0, 0.6) !important;
+    z-index: 3900 !important;
+  }
+
+  html body .cart-overlay.active {
+    display: block !important;
+  }
+
+  /* -----------------------------------------------------
+     6) Checkout — stacked, order summary above the form
+     ----------------------------------------------------- */
+  .checkout-grid {
     display: flex !important;
     flex-direction: column !important;
     gap: 16px !important;
@@ -419,36 +273,18 @@
     max-width: 100% !important;
   }
 
-  html body .checkout-grid .order-summary {
+  .checkout-grid .order-summary {
     order: 1 !important;
-    width: 100% !important;
-    max-width: 100% !important;
   }
 
-  html body .checkout-grid .checkout-form {
+  .checkout-grid .checkout-form {
     order: 2 !important;
-    width: 100% !important;
-    max-width: 100% !important;
   }
 
-  /* Space between navbar and body content */
-  main,
-  .page-header,
-  .checkout-section,
   .checkout-form,
   .order-summary {
-    margin-top: 16px !important;
-    padding-top: 0 !important;
-  }
-
-  /* Ensure forms and sections don't overflow */
-  .checkout-form,
-  .order-summary,
-  .form-group,
-  .form-row {
     width: 100% !important;
     max-width: 100% !important;
-    box-sizing: border-box !important;
   }
 
   .form-group input,
@@ -459,171 +295,37 @@
     min-height: 48px !important;
     box-sizing: border-box !important;
   }
-}
 
-/* ============================================
-   PAGE HEADER BELOW FIXED NAVBAR
-   Applies to all pages except home
-   ============================================ */
-
-main,
-.page-header,
-.about-section,
-.contact-section,
-.checkout-section,
-.auth-section,
-.auth-container,
-.orders-section,
-.orders-container,
-.customer-account-section {
-  margin-top: 80px !important;
-  padding-top: 0 !important;
-}
-
-/* ============================================
-   FORCE CONTENT BELOW FIXED NAVBAR
-   (all pages except home)
-   ============================================ */
-@media (max-width: 768px) {
-  body:not(.home) .page-header,
-  body:not(.home) .checkout-section,
-  body:not(.home) .about-section,
-  body:not(.home) .contact-section,
-  body:not(.home) .auth-section,
-  body:not(.home) .orders-section,
-  body:not(.home) main {
-    margin-top: 80px !important;
-    padding-top: 0 !important;
+  .btn-block {
+    width: 100% !important;
   }
 
-  /* Also handle customer login/orders pages that reuse checkout-section */
-  body:not(.home) section.checkout-section {
-    margin-top: 80px !important;
-  }
-}
-
-@media (min-width: 769px) {
-  body:not(.home) .page-header,
-  body:not(.home) .checkout-section,
-  body:not(.home) .about-section,
-  body:not(.home) .contact-section,
-  body:not(.home) main {
-    margin-top: 90px !important;
-    padding-top: 0 !important;
-  }
-}
-
-/* ============================================
-   MORE GAP BELOW FIXED NAVBAR
-   ============================================ */
-@media (max-width: 768px) {
-  body:not(.home) .page-header,
-  body:not(.home) .checkout-section,
-  body:not(.home) .about-section,
-  body:not(.home) .contact-section,
-  body:not(.home) .auth-section,
-  body:not(.home) .orders-section,
-  body:not(.home) main {
-    margin-top: 140px !important;
-  }
-}
-
-@media (min-width: 769px) {
-  body:not(.home) .page-header,
-  body:not(.home) .checkout-section,
-  body:not(.home) .about-section,
-  body:not(.home) .contact-section,
-  body:not(.home) main {
-    margin-top: 160px !important;
-  }
-}
-
-/* ============================================
-   ABOUT PAGE VERTICAL ALIGNMENT (MOBILE)
-   ============================================ */
-@media (max-width: 768px) {
+  /* -----------------------------------------------------
+     7) About page — single column
+     ----------------------------------------------------- */
   .about-content {
-    flex-direction: column !important;
-    gap: 24px !important;
-  }
-
-  .about-text,
-  .about-image {
-    width: 100% !important;
-    max-width: 100% !important;
-  }
-
-  .about-highlights {
-    grid-template-columns: 1fr !important;
-    gap: 16px !important;
-  }
-
-  .about-highlights .highlight,
-  .about-highlights .service-card {
-    width: 100% !important;
-    max-width: 100% !important;
-  }
-
-  .about-section {
-    margin-top: 140px !important;
-  }
-}
-
-/* ABSOLUTE LAST RESORT: ABOUT SECTION VERTICAL */
-@media (max-width: 768px) {
-  html body .about-section .about-content {
     display: block !important;
     grid-template-columns: none !important;
   }
 
-  html body .about-section .about-text {
-    width: 100% !important;
-    margin-bottom: 24px !important;
-  }
-
-  html body .about-section .about-image {
-    width: 100% !important;
-  }
-
-  html body .about-section .about-highlights {
-    grid-template-columns: 1fr !important;
-  }
-}
-
-/* ABOUT FORCE VERTICAL */
-@media (max-width: 768px) {
-  html body .about-content {
+  .about-text {
     display: block !important;
-    grid-template-columns: none !important;
-  }
-
-  html body .about-text {
     width: 100% !important;
-    display: block !important;
     margin-bottom: 32px !important;
   }
 
-  html body .about-image {
-    width: 100% !important;
+  .about-image {
     display: block !important;
+    width: 100% !important;
   }
 
-  html body .about-highlights {
+  .about-highlights {
     display: grid !important;
     grid-template-columns: 1fr !important;
     gap: 16px !important;
   }
 
-  html body .about-highlights .highlight {
-    width: 100% !important;
-    max-width: 100% !important;
-  }
-}
-
-/* ABOUT PAGE: OUR SERVICES VERTICAL */
-@media (max-width: 768px) {
-  html body .services-grid,
-  html body .about-section .services-grid {
+  .services-grid {
     display: grid !important;
     grid-template-columns: 1fr !important;
     gap: 16px !important;
@@ -631,235 +333,303 @@ main,
     max-width: 100% !important;
   }
 
-  html body .services-grid .service-card,
-  html body .about-section .service-card {
+  /* -----------------------------------------------------
+     8) Profile dropdown — no rules needed here.
+        Un-clipping of the dropdown on ≤768px is done via
+        .has-profile-menu in final-fixes.css (loaded last);
+        duplicating it here would only create conflicts.
+     ----------------------------------------------------- */
+
+  /* -----------------------------------------------------
+     9) Cart badge — no rules needed here.
+        .cart-btn base (navbar.css) is position:relative and
+        .cart-count badge is absolute over it; the #cartBtn
+        rule above re-asserts relative so the badge stays put.
+     ----------------------------------------------------- */
+
+  /* -----------------------------------------------------
+     10) Order cards — full width, stacked, touch-friendly
+     ----------------------------------------------------- */
+  .order-card {
     width: 100% !important;
     max-width: 100% !important;
+    padding: 16px !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  .order-card-header {
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    gap: 10px !important;
+  }
+
+  .order-card-id {
+    font-size: 16px !important;
+  }
+
+  .order-items-list {
+    overflow-x: hidden !important;
+  }
+
+  .order-item-row,
+  .order-summary-line {
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+  }
+
+  .order-info-line,
+  .order-item-name,
+  .order-item-price {
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+  }
+
+  .order-summary-line.order-summary-total {
+    font-size: 16px !important;
   }
 }
 
-/* REMOVE BLACK STICKY FOOTER / MOBILE STICKY BAR */
-.mobile-sticky,
-.mobile-call,
-.mobile-order {
-  display: none !important;
-}
+/* -----------------------------------------------------
+   10) Small screens refinement (≤480px)
+   ----------------------------------------------------- */
+@media (max-width: 480px) {
+  .navbar .container {
+    padding: 0 8px !important;
+  }
 
-/* FINAL: REMOVE ANY MOBILE STICKY BLACK BAR */
-.mobile-sticky,
-.mobile-call,
-.mobile-order {
-  display: none !important;
+  .nav-brand a {
+    font-size: 18px !important;
+  }
 }
+/* Payment method cards stack on very small screens */
+@media (max-width: 480px) {
+  .payment-method-group {
+    flex-direction: column;
+  }
 
-/* FINAL: HIDE ANY EMPTY BLACK BOTTOM BAR */
-.mobile-sticky,
-.mobile-call,
-.mobile-order,
-body::after {
-  display: none !important;
-  height: 0 !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  border: none !important;
-  background: transparent !important;
+  .payment-method-option {
+    width: 100%;
+  }
 }
 
 /* ============================================
-   NOTE: Previous forced navbar/hero overrides
-   (positioning, 64px heights, 80px spacing) were
-   removed to restore the original clean layout from
-   navbar.css / hero.css / responsive.css.
-   ============================================ */
-
-   /* ============================================
-   MANUAL FIX: PROFILE + CART + HAMBURGER RIGHT
+   FOOTER: QUICK LINKS + SERVICES SIDE-BY-SIDE
+   Mobile & Tablet only
    ============================================ */
 @media (max-width: 1024px) {
+  .footer-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
 
-  html body .navbar .container {
+  .footer-content .footer-brand,
+  .footer-content .footer-section:not(.quick-links-footer-section):not(.services-footer-section) {
+    flex: 1 1 100%;
+  }
+
+  .quick-links-footer-section,
+  .services-footer-section {
+    flex: 1 1 45%;
+    min-width: 140px;
+  }
+}
+
+/* ============================================
+   FINAL FORCE: QUICK LINKS + SERVICES HORIZONTAL
+   Overrides any width:100% rule
+   ============================================ */
+@media (max-width: 1024px) {
+  .quick-links-footer-section,
+  .services-footer-section {
+    width: auto !important;
+    max-width: 45% !important;
+    flex: 1 1 45% !important;
+    min-width: 140px !important;
+  }
+
+  .footer-content {
     display: flex !important;
-    flex-wrap: nowrap !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    gap: 20px !important;
+  }
+}
+
+/* ============================================
+   REDUCE FOOTER TOP GAP — MOBILE & TABLET ONLY
+   Excludes About page
+   ============================================ */
+@media (max-width: 1024px) {
+  body:not(.about-page) .footer {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+  }
+}
+
+/* ============================================
+   MOVE FOOTER DIVIDER LINE UP — MOBILE/TABLET ONLY
+   Excludes About page
+   ============================================ */
+@media (max-width: 1024px) {
+  body:not(.about-page) .footer {
+    margin-top: -16px !important;
+    padding-top: 0 !important;
+  }
+}
+
+/* ============================================
+   FINAL: MOVE FOOTER DIVIDER MORE UP — MOBILE/TABLET
+   Excludes About page
+   ============================================ */
+@media (max-width: 1024px) {
+  body:not(.about-page) .footer {
+    margin-top: -24px !important;
+    padding-top: 0 !important;
+  }
+}
+
+/* ============================================
+   REVIEWS PAGE FOOTER — MATCH OTHER PAGES
+   Mobile/Tablet only
+   ============================================ */
+@media (max-width: 1024px) {
+  body.reviews-page .footer {
+    margin-top: -24px !important;
+    padding-top: 0 !important;
+  }
+
+  body.reviews-page .reviews {
+    padding-bottom: 0 !important;
+  }
+}
+
+/* ============================================
+   FOOTER DIVIDER ALIGNMENT — ALL PAGES
+   Mobile/Tablet only
+   ============================================ */
+@media (max-width: 1024px) {
+  html body .footer {
+    margin-top: -24px !important;
+    padding-top: 0 !important;
+  }
+}
+
+/* ============================================
+   FINAL: ALL PAGES FOOTER & DIVIDER ALIGNMENT
+   Mobile/Tablet only
+   ============================================ */
+@media (max-width: 1024px) {
+  html body .footer {
+    margin-top: -24px !important;
+    padding-top: 0 !important;
+  }
+
+  html body .reviews,
+  html body .about-section {
+    padding-bottom: 0 !important;
+  }
+}
+
+/* ============================================
+   ABOUT & REVIEWS — MATCH OTHER PAGES FOOTER SPACING
+   Mobile/Tablet only
+   ============================================ */
+@media (max-width: 1024px) {
+  html body .about-section,
+  html body .reviews {
+    padding-bottom: 80px !important;
+  }
+}
+
+/* ============================================
+   MATCH FOOTER SPACING ON ABOUT + REVIEWS
+   Mobile/Tablet only
+   ============================================ */
+@media (max-width: 1024px) {
+  html body .services-section,
+  html body section.reviews {
+    padding-bottom: 80px !important;
+  }
+}
+
+/* ============================================
+   REVIEWS PAGE FOOTER SPACING FINAL FIX
+   Mobile/Tablet only
+   ============================================ */
+@media (max-width: 1024px) {
+  html body.reviews-page section.reviews,
+  html body.reviews-page #reviews {
+    padding-bottom: 80px !important;
+  }
+}
+
+/* ============================================
+   HORIZONTAL BUTTON GROUPS — MOBILE/TABLET
+   Hero buttons + Contact buttons
+   ============================================ */
+@media (max-width: 1024px) {
+  .hero-buttons,
+  .contact-buttons {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
     align-items: center !important;
-    justify-content: space-between !important;
+    justify-content: center !important;
+    gap: 12px !important;
     width: 100% !important;
-    padding-left: 12px !important;
-    padding-right: 12px !important;
-    box-sizing: border-box !important;
-    gap: 8px !important;
   }
 
-  html body .nav-brand {
+  .hero-buttons .btn,
+  .contact-buttons .btn {
+    width: auto !important;
     flex: 0 0 auto !important;
-    max-width: 40% !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    white-space: nowrap !important;
-  }
-
-  html body .nav-actions {
-    display: flex !important;
-    flex-wrap: nowrap !important;
-    align-items: center !important;
-    justify-content: flex-end !important;
-    gap: 8px !important;
-    margin-left: auto !important;
-    flex-shrink: 0 !important;
-  }
-
-  html body #navProfileAction {
-    flex-shrink: 0 !important;
-  }
-
-  html body #cartBtn {
-    flex-shrink: 0 !important;
-  }
-
-  html body #hamburger {
-    display: flex !important;
-    flex-shrink: 0 !important;
-    width: 44px !important;
-    height: 44px !important;
-    min-width: 44px !important;
-    min-height: 44px !important;
-    padding: 10px !important;
-    box-sizing: border-box !important;
-    position: static !important;
-    margin: 0 !important;
-    flex-direction: column !important;
-    justify-content: center !important;
-    align-items: center !important;
-    gap: 5px !important;
-  }
-
-  html body #hamburger span {
-    display: block !important;
-    width: 24px !important;
-    height: 2px !important;
-    background: #fff !important;
-    border-radius: 2px !important;
-  }
-}
-
-@media (min-width: 769px) and (max-width: 1024px) {
-  html body #hamburger {
-    display: none !important;
+    padding: 10px 18px !important;
+    font-size: 14px !important;
   }
 }
 
 /* ============================================
-   FINAL MOBILE NAVBAR: ALL RIGHT-SIDE ITEMS VISIBLE
+   BUTTON PAIRS AT 320px — KEEP HORIZONTAL
    ============================================ */
-@media (max-width: 768px) {
-
-  /* Allow actions container to shrink children if needed,
-     but not wrap or overflow off-screen */
-  html body .nav-actions {
-    display: flex !important;
+@media (max-width: 360px) {
+  .hero-buttons,
+  .contact-buttons {
     flex-wrap: nowrap !important;
-    align-items: center !important;
-    justify-content: flex-end !important;
     gap: 6px !important;
-    margin-left: auto !important;
-    max-width: 55% !important;
-    overflow: hidden !important;
-    flex-shrink: 0 !important;
   }
 
-  /* Brand stays compact */
-  html body .nav-brand {
-    flex: 0 0 auto !important;
-    max-width: 40% !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    white-space: nowrap !important;
-  }
-
-  /* Profile/login area must shrink and truncate */
-  html body #navProfileAction {
-    flex: 0 1 auto !important;
+  .hero-buttons .btn,
+  .contact-buttons .btn {
+    flex: 1 1 auto !important;
     min-width: 0 !important;
-    max-width: 100px !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
+    padding: 8px 8px !important; */
+    font-size: 11px !important;
+    letter-spacing: 0 !important;
     white-space: nowrap !important;
-  }
-
-  html body #navProfileAction .nav-login-btn {
-    padding: 8px 10px !important;
-    font-size: 12px !important;
-    white-space: nowrap !important;
-  }
-
-  html body .nav-profile-area {
-    display: flex !important;
-    align-items: center !important;
-    gap: 4px !important;
-    max-width: 100% !important;
-    overflow: hidden !important;
-  }
-
-  html body .nav-profile-area .customer-name {
-    display: inline-block !important;
-    max-width: 60px !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    white-space: nowrap !important;
-  }
-
-  /* Cart must always be visible */
-  html body #cartBtn {
-    display: flex !important;
-    flex: 0 0 auto !important;
-    width: 44px !important;
-    height: 44px !important;
-    min-width: 44px !important;
-    min-height: 44px !important;
-    padding: 10px !important;
-    box-sizing: border-box !important;
-    position: static !important;
-    margin: 0 !important;
-    align-items: center !important;
-    justify-content: center !important;
-  }
-
-  /* Hamburger must always be visible */
-  html body #hamburger {
-    display: flex !important;
-    flex: 0 0 auto !important;
-    width: 44px !important;
-    height: 44px !important;
-    min-width: 44px !important;
-    min-height: 44px !important;
-    padding: 10px !important;
-    box-sizing: border-box !important;
-    position: static !important;
-    margin: 0 !important;
-    flex-direction: column !important;
-    justify-content: center !important;
-    align-items: center !important;
-    gap: 5px !important;
-  }
-
-  html body #hamburger span {
-    display: block !important;
-    width: 24px !important;
-    height: 2px !important;
-    background: #fff !important;
-    border-radius: 2px !important;
+    text-align: center !important;
   }
 }
+
 /* ============================================
-   CART BADGE OVER CART ICON — FINAL
+   BUTTON PAIRS — 321px to 480px (e.g., 375px)
    ============================================ */
-html body #cartBtn {
-  position: relative !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  width: 44px !important;
-  height: 44px !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  box-sizing: border-box !important;
+@media (min-width: 321px) and (max-width: 480px) {
+  .hero-buttons,
+  .contact-buttons {
+    flex-wrap: nowrap !important;
+    gap: 8px !important;
+  }
+
+  .hero-buttons .btn,
+  .contact-buttons .btn {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    padding: 8px 12px !important;
+    font-size: 12px !important;
+    letter-spacing: 0 !important;
+    white-space: nowrap !important;
+    text-align: center !important;
+  }
 }

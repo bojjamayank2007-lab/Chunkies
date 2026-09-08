@@ -1,366 +1,218 @@
 # CHUNKIES Restaurant Website
 
-A complete, production-quality full-stack restaurant website for CHUNKIES (चुंकीज़), a fast food restaurant in Jogeshwari West, Mumbai.
+A complete full-stack restaurant website for **CHUNKIES (चुंक़ीज़)**, a fast food restaurant in Jogeshwari West, Mumbai. Customers can browse the menu, register and log in, share reviews, build a cart, and place **Cash on Delivery (COD)** or **online (Razorpay)** orders. A separate, fully authenticated admin dashboard handles orders, menu items, reviews, and restaurant settings.
 
 ## Tech Stack
 
-### Frontend
-- HTML5
-- CSS3
-- Vanilla JavaScript
-- Font Awesome (icons)
-- Fetch API
-
-### Backend
-- Node.js
-- Express.js
-
-### Database
-- MongoDB
-- Mongoose
+| Layer        | Technology                                          |
+| ------------ | --------------------------------------------------- |
+| Frontend     | HTML5, CSS3, Vanilla JavaScript                     |
+| Backend      | Node.js, Express.js                                 |
+| Database     | MongoDB, Mongoose ODM                               |
+| Auth         | JWT stored in HttpOnly cookies                      |
+| Payments     | Razorpay integration structure (test mode ready)    |
+| Security     | Helmet, express-rate-limit, CORS, input validation  |
 
 ## Project Structure
 
 ```
 CHUNKIES/
 │
-├── frontend/
-│   ├── index.html          # Home page
-│   ├── menu.html           # Menu page
-│   ├── about.html          # About page
-│   ├── contact.html        # Contact page
-│   ├── cart.html           # Checkout page
-│   │
-│   ├── css/
-│   │   ├── style.css       # Base styles
-│   │   ├── navbar.css      # Navigation styles
-│   │   ├── hero.css        # Hero section styles
-│   │   ├── menu.css        # Menu section styles
-│   │   ├── reviews.css     # Reviews section styles
-│   │   ├── footer.css      # Footer styles
-│   │   └── responsive.css  # Responsive styles
-│   │
+├── frontend/                  # Customer-facing website
+│   ├── index.html             # Home page
+│   ├── menu.html              # Menu page
+│   ├── cart.html              # Cart & checkout page
+│   ├── contact.html           # Contact page
+│   ├── about.html             # About page
+│   ├── customer-login.html    # Customer login/register page
+│   ├── customer-orders.html   # Customer order history page
+│   ├── css/                   # Styles: style, navbar, hero, menu, ...
 │   ├── js/
-│   │   ├── main.js         # Main JavaScript
-│   │   ├── navbar.js       # Navigation functionality
-│   │   ├── menu.js         # Menu functionality
-│   │   ├── cart.js         # Shopping cart functionality
-│   │   ├── reviews.js      # Reviews functionality
-│   │   ├── contact.js      # Checkout form functionality
-│   │   └── api.js          # API integration
-│   │
-│   └── assets/
-│       ├── images/
-│       └── icons/
+│   │   ├── api.js             # API integration (base URL)
+│   │   ├── main.js            # Main JavaScript
+│   │   ├── navbar.js          # Navigation (auth-aware profile)
+│   │   ├── menu.js            # Menu rendering, filters, sorting
+│   │   ├── cart.js            # Cart, checkout & Razorpay flow
+│   │   ├── reviews.js         # Review rendering
+│   │   ├── contact.js         # Contact page logic
+│   │   ├── customerAuth.js    # Customer auth helpers
+│   │   └── restaurant.js      # Restaurant info loader
+│   └── assets/                # Images and icons
 │
-├── backend/
-│   ├── server.js           # Express server
-│   ├── package.json        # Backend dependencies
-│   ├── .env                # Environment variables
-│   ├── seed.js             # Database seed script
-│   │
-│   ├── config/
-│   │   └── db.js           # MongoDB connection
-│   │
-│   ├── models/
-
-
-
-│   │   ├── MenuItem.js     # Menu item model
-│   │   ├── Order.js        # Order model
-│   │   ├── Review.js       # Review model
-│   │   └── Restaurant.js   # Restaurant info model
-│   │
-│   ├── routes/
-│   │   ├── menuRoutes.js   # Menu API routes
-│   │   ├── orderRoutes.js  # Order API routes
-│   │   ├── reviewRoutes.js # Review API routes
-│   │   └── restaurantRoutes.js # Restaurant API routes
-│   │
-│   ├── controllers/
-│   │   ├── menuController.js
-│   │   ├── orderController.js
-│   │   ├── reviewController.js
-│   │   └── restaurantController.js
-│   │
-│   └── middleware/
-│       └── errorMiddleware.js # Error handling
+├── backend/                   # Express REST API
+│   ├── server.js              # App entry, middleware, routes & graceful shutdown
+│   ├── seed.js                # Demo data seed script
+│   ├── seedAdmin.js           # Admin account seed script
+│   ├── config/                # MongoDB connection (db.js)
+│   ├── models/                # Admin, Customer, MenuItem, Order, Review, Restaurant
+│   ├── controllers/           # Request handlers
+│   ├── routes/                # API route definitions
+│   └── middleware/            # Admin/customer auth + error handling
 │
-├── admin/
-│   ├── index.html          # Admin dashboard
-│   ├── css/
-│   │   └── admin.css       # Admin styles
-│   └── js/
-│       └── admin.js        # Admin functionality
+├── admin/                     # Authenticated admin dashboard
+│   ├── index.html             # Orders, menu, reviews, settings
+│   ├── css/admin.css
+│   └── js/admin.js
 │
-├── README.md
-└── .gitignore
+└── README.md
 ```
+
+## Features
+
+### Customer
+- **Customer registration / login / logout** (JWT stored in an HttpOnly cookie)
+- **Customer order history** (`customer-orders.html`, backed by `GET /api/orders/my-orders`)
+- Browse the menu with category filters, search, and sorting
+- Star-rated **reviews** submission and display
+- **Cart system — customer login is required to Add to Cart**; guests are prompted to log in
+- Checkout with **Cash on Delivery (COD)** or **Online payment**
+- **Online payment flow via Razorpay** — the server creates a Razorpay order, the browser opens Razorpay Checkout, and the server verifies the payment signature
+- **Mobile / tablet responsive** UI
+
+### Admin
+- **Admin authentication** — the dashboard requires login (login screen shown when unauthenticated)
+- **Admin dashboard**: statistics and management sections for **orders**, **menu**, **reviews**, and **settings** (restaurant info)
+- Orders: view all, view details, update status, delete
+- Menu: add, edit, delete menu items
+- Reviews: delete inappropriate reviews
+
+### Security & Engineering
+- **Server-side order pricing** — subtotal, 5% tax, and total are always calculated from database menu prices; client-sent prices are never trusted
+- **Rate limiting** on the API, with stricter limits on **auth login** and **review submissions**
+- **Security headers via Helmet**
+- **CORS configuration** in development (localhost:8080/8081) and production (`FRONTEND_URL`), with credentials enabled
+- **Health check endpoint** — `GET /health` returns `{ "status": "ok" }`
+- **Graceful shutdown** on SIGINT/SIGTERM (closes the HTTP server and MongoDB connection)
+- JWT tokens in **HttpOnly cookies**; separate **admin** and **customer** tokens with separate middleware
+- Passwords hashed with **bcrypt** (12 salt rounds); no passwords in source code
+- `.env` is git-ignored and must never be committed
 
 ## Requirements
 
 - Node.js (v14 or higher)
 - MongoDB (v4.4 or higher)
-- npm or yarn
+- npm
 
 ## Installation
 
-### 1. Clone/Download the Project
-
 ```bash
-cd /Users/mayankbojja/CascadeProjects/CHUNKIES
-```
-
-### 2. Install Backend Dependencies
-
-```bash
+# 1) Install backend dependencies
 cd backend
 npm install
+
+# 2) Configure environment variables in backend/.env (see below)
+
+# 3) Start MongoDB (macOS Homebrew example)
+brew services start mongodb-community
+
+# 4) Seed the database with demo data (restaurant, menu items, reviews)
+npm run seed
+
+# 5) Seed the admin account (reads ADMIN_EMAIL / ADMIN_PASSWORD from .env)
+npm run seed:admin
+
+# 6) Start the backend
+npm start          # or: npm run dev (nodemon)
+
+# 7) Open the website
+#   Frontend: frontend/index.html  (or serve the frontend folder)
+#   Admin:    admin/index.html     (log in with the seeded admin credentials)
 ```
 
-### 3. Configure Environment Variables
+> The frontend expects the backend on `http://localhost:5001/api` (see `frontend/js/api.js`). In development the backend's CORS whitelist allows `http://localhost:8080` and `http://localhost:8081`, so serve the frontend/admin on one of those ports for local development.
 
-The `.env` file is already configured with default values:
+## Environment Variables
+
+Create `backend/.env` based on the following template:
 
 ```
 MONGO_URI=mongodb://127.0.0.1:27017/chunkies
-PORT=5000
+PORT=5001
 NODE_ENV=development
+JWT_SECRET=replace_with_a_long_random_string
+ADMIN_EMAIL=admin@chunkies.in
+ADMIN_PASSWORD=replace_with_a_strong_password
+RAZORPAY_KEY_ID=your_razorpay_key_id
+RAZORPAY_KEY_SECRET=your_razorpay_key_secret
+# FRONTEND_URL=http://your-frontend-domain   # REQUIRED in production
 ```
 
-If your MongoDB is running on a different port or host, update the `MONGO_URI` accordingly.
+| Variable               | Description                                                     |
+| -----------------------| --------------------------------------------------------------- |
+| `MONGO_URI`            | MongoDB connection string                                       |
+| `PORT`                 | Backend port (default: **5001**)                                |
+| `NODE_ENV`             | `development` or `production`                                   |
+| `JWT_SECRET`           | Secret used to sign admin and customer JWTs                     |
+| `ADMIN_EMAIL`          | Admin login email (used by `npm run seed:admin`)                |
+| `ADMIN_PASSWORD`       | Admin login password (used by `npm run seed:admin`)             |
+| `RAZORPAY_KEY_ID`      | Razorpay key ID (use test keys for test mode)                   |
+| `RAZORPAY_KEY_SECRET`  | Razorpay key secret (test mode ready)                           |
+| `FRONTEND_URL`         | Allowed frontend origin for CORS in production                  |
 
-### 4. Start MongoDB
+⚠️ **`.env` contains secrets — never commit it.** It is already listed in `.gitignore`.
 
-Make sure MongoDB is running on your system:
+## API Overview
 
-```bash
-# On macOS with Homebrew
-brew services start mongodb-community
+Base URL: `http://localhost:5001/api`
 
-# On Linux
-sudo systemctl start mongod
+### Public endpoints
 
-# On Windows
-# Start MongoDB from the Services panel
-```
+| Method | Endpoint                       | Description                                      |
+| ------ | ------------------------------ | ------------------------------------------------ |
+| GET    | `/health`                      | Health check (`{ "status": "ok" }`)              |
+| GET    | `/api/menu`                    | List all menu items                              |
+| GET    | `/api/menu/:id`                | Get a single menu item                           |
+| POST   | `/api/orders`                  | Create an order (COD or online; guests allowed)  |
+| POST   | `/api/orders/verify-payment`   | Verify a Razorpay payment signature              |
+| GET    | `/api/reviews`                 | List reviews                                     |
+| POST   | `/api/reviews`                 | Submit a review (rate-limited)                   |
+| GET    | `/api/restaurant`              | Get restaurant info                              |
+| POST   | `/api/auth/customer/register`  | Create a customer account                        |
+| POST   | `/api/auth/customer/login`     | Log in a customer (sets `customerToken` cookie)  |
+| POST   | `/api/auth/customer/logout`    | Log out a customer                               |
 
-### 5. Run Seed Script
+### Customer-protected endpoints (require a valid `customerToken` cookie)
 
-Populate the database with demo data:
+| Method | Endpoint                   | Description                                     |
+| ------ | -------------------------- | ----------------------------------------------- |
+| GET    | `/api/auth/customer/me`    | Get the logged-in customer profile              |
+| GET    | `/api/orders/my-orders`    | Get the logged-in customer's order history      |
 
-```bash
-node seed.js
-```
+### Admin-only endpoints (require a valid `adminToken` cookie)
 
-This will create:
-- Restaurant information
-- 17 demo menu items
-- 8 demo reviews
+| Method | Endpoint                  | Description                                     |
+| ------ | ------------------------- | ----------------------------------------------- |
+| POST   | `/api/menu`               | Create a menu item                              |
+| PUT    | `/api/menu/:id`           | Update a menu item                              |
+| DELETE | `/api/menu/:id`           | Delete a menu item                              |
+| GET    | `/api/orders`             | List all orders                                 |
+| GET    | `/api/orders/:id`         | Get a single order                              |
+| PUT    | `/api/orders/:id`         | Update order status                             |
+| DELETE | `/api/orders/:id`         | Delete an order                                 |
+| DELETE | `/api/reviews/:id`        | Delete a review                                 |
+| PUT    | `/api/restaurant`         | Update restaurant info                          |
+| POST   | `/api/auth/login`         | Admin login (sets `adminToken` cookie)          |
+| POST   | `/api/auth/logout`        | Admin logout                                    |
 
-### 6. Start the Backend Server
+## Admin Setup
 
-```bash
-npm start
-```
-
-Or for development with auto-reload:
-
-```bash
-npm run dev
-```
-
-The backend will start on `http://localhost:5000`
-
-### 7. Open the Frontend
-
-Open `frontend/index.html` in your browser:
-
-```bash
-# On macOS
-open frontend/index.html
-
-# On Linux
-xdg-open frontend/index.html
-
-# On Windows
-start frontend/index.html
-```
-
-Or simply navigate to the file in your browser.
-
-### 8. Access Admin Dashboard
-
-Open `admin/index.html` in your browser to access the admin dashboard.
-
-## API Documentation
-
-### Menu Endpoints
-
-| Method | Endpoint | Purpose |
-|--------|----------|---------|
-| GET | `/api/menu` | Get all menu items (supports query params: category, search, sort) |
-| GET | `/api/menu/:id` | Get single menu item |
-| POST | `/api/menu` | Create new menu item |
-| PUT | `/api/menu/:id` | Update menu item |
-| DELETE | `/api/menu/:id` | Delete menu item |
-
-### Order Endpoints
-
-| Method | Endpoint | Purpose |
-|--------|----------|---------|
-| GET | `/api/orders` | Get all orders |
-| GET | `/api/orders/:id` | Get single order |
-| POST | `/api/orders` | Create new order |
-| PUT | `/api/orders/:id` | Update order status |
-| DELETE | `/api/orders/:id` | Delete order |
-
-### Review Endpoints
-
-| Method | Endpoint | Purpose |
-|--------|----------|---------|
-| GET | `/api/reviews` | Get all reviews |
-| POST | `/api/reviews` | Create new review |
-| DELETE | `/api/reviews/:id` | Delete review |
-
-### Restaurant Endpoints
-
-| Method | Endpoint | Purpose |
-|--------|----------|---------|
-| GET | `/api/restaurant` | Get restaurant information |
-| PUT | `/api/restaurant` | Update restaurant information |
-
-## Features
-
-### Frontend
-- **Responsive Design**: Mobile-first approach with hamburger menu
-- **Dynamic Menu**: Menu items loaded from backend API
-- **Search & Filter**: Search by name/description, filter by category, sort by price/popularity
-- **Shopping Cart**: Add/remove items, quantity controls, LocalStorage persistence
-- **Checkout**: Complete order form with validation
-- **Reviews**: Display customer reviews with ratings
-- **Animations**: Smooth transitions and hover effects
-
-### Admin Dashboard
-- **Dashboard Overview**: Stats for orders, revenue, menu items
-- **Order Management**: View orders, update status, view details
-- **Menu Management**: Add, edit, delete menu items
-- **Review Management**: View and delete reviews
-- **Restaurant Settings**: Update restaurant information
-
-### Backend
-- **RESTful API**: Clean API structure with proper HTTP methods
-- **MongoDB Integration**: Mongoose models with validation
-- **Error Handling**: Centralized error middleware
-- **Security**: Order totals calculated on backend (not trusted from frontend)
-- **CORS**: Configured for cross-origin requests
-
-## Demo Data
-
-The seed script includes:
-
-### Restaurant Info
-- Name: CHUNKIES (चुंकीज़)
-- Address: 225, Swami Vivekanand Rd, Jogeshwari West, Mumbai
-- Phone: 090040 94979
-- Rating: 4.0/5 (566+ reviews)
-- Hours: Open 24 Hours
-
-### Menu Items (17 items)
-- Burgers: Mexican Chicken Burger, Fish Chunkie Burger, Classic Cheese Burger, Veggie Burger
-- Chicken: Chicken Strips, Frankie Nuggets, Peri Peri Chicken
-- Wraps: Chicken Wrap, Paneer Wrap
-- Sides: Loaded Fries, Regular Fries, Onion Rings
-- Combos: Family Combo, Duo Combo
-- Drinks: Coca Cola, Pepsi, Fresh Lime Soda
-
-### Reviews (8 demo reviews)
-- Customer testimonials with ratings 4-5 stars
+1. Set `ADMIN_EMAIL` and `ADMIN_PASSWORD` in `backend/.env`.
+2. Run `npm run seed:admin` (`node seedAdmin.js`) to create the admin account. The default admin details are read **directly from `.env`** — there are no hardcoded credentials in the source code.
+3. Open `admin/index.html` and log in.
 
 ## Security Notes
 
-⚠️ **IMPORTANT FOR PRODUCTION:**
+- **JWT in HttpOnly cookies**: both admin and customer sessions use JWT stored in HttpOnly cookies (not `localStorage`), reducing the risk of XSS-based token theft.
+- **Admin and customer tokens are separate**: `adminToken` vs `customerToken` are signed with the same `JWT_SECRET` but carry distinct roles, and are verified by different middleware (`protect` for admins, `protectCustomer`/`optionalCustomerAuth` for customers).
+- **No passwords in source code**: passwords are bcrypt-hashed with 12 salt rounds before storage; admin credentials come from `.env`.
+- **`.env` must not be committed**: it contains `JWT_SECRET`, Razorpay keys, and admin credentials.
+- **Rate limiting** protects auth login and review endpoints from abuse.
+- **Helmet** sets common security headers; request bodies are limited to 10kb; order totals are computed server-side from database prices.
 
-1. **Authentication**: The current admin dashboard has no authentication. Add authentication middleware before deploying to production.
+## Production Notes
 
-2. **API Security**: All endpoints are currently public. Implement proper authentication and authorization.
-
-3. **Environment Variables**: Never commit `.env` file to version control. Use different values for production.
-
-4. **Input Validation**: While basic validation is implemented, add comprehensive sanitization for production.
-
-5. **Payment Integration**: This demo does not include real payment processing. Integrate a payment gateway (Razorpay, Stripe, etc.) for production.
-
-6. **Delivery Integration**: No real delivery tracking is implemented. Integrate with delivery services for production.
-
-## Development
-
-### Adding New Menu Items
-
-1. Access admin dashboard at `admin/index.html`
-2. Navigate to Menu section
-3. Click "Add Item"
-4. Fill in the details and save
-
-### Managing Orders
-
-1. Access admin dashboard
-2. Navigate to Orders section
-3. View order details by clicking the eye icon
-4. Update order status using the dropdown
-5. Delete orders if needed
-
-### Customizing Styles
-
-All styles are in `frontend/css/`. The main color variables are defined in `style.css`:
-
-```css
-:root {
-    --primary-color: #ff6b35;
-    --primary-dark: #e55a2b;
-    --secondary-color: #1a1a1a;
-    /* ... more variables */
-}
-```
-
-## Troubleshooting
-
-### MongoDB Connection Error
-
-If you see "MongoDB Connection Error":
-- Ensure MongoDB is running
-- Check the `MONGO_URI` in `.env`
-- Verify MongoDB is accessible on the specified port
-
-### Backend Not Starting
-
-If the backend fails to start:
-- Ensure all dependencies are installed (`npm install`)
-- Check if port 5000 is already in use
-- Review the error message in terminal
-
-### Frontend Not Loading Data
-
-If the frontend shows loading errors:
-- Ensure the backend is running on `http://localhost:5000`
-- Check browser console for API errors
-- Verify CORS is configured correctly
-
-### Seed Script Issues
-
-If the seed script fails:
-- Ensure MongoDB is running
-- Try dropping the database and running again
-- Check for duplicate key errors
-
-## License
-
-This project is created as a demo for CHUNKIES restaurant. All rights reserved.
-
-## Support
-
-For issues or questions, please contact the development team.
-
----
-
-**Note**: This is a demo website. For production deployment, implement proper security measures, authentication, and payment processing.
+- Set `NODE_ENV=production` so cookies use the `Secure` flag and CORS restricts the origin.
+- Set `FRONTEND_URL` to your deployed frontend origin so CORS allows only that domain.
+- Replace the **test Razorpay keys** with your real `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET`.
+- Use a **secure MongoDB URI** (for example MongoDB Atlas or an auth-enabled instance), never a publicly exposed one.
+- Use a strong, unique `JWT_SECRET`, and set strong `ADMIN_EMAIL` / `ADMIN_PASSWORD` values before running `seed:admin`.

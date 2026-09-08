@@ -1,0 +1,500 @@
+    
+    if (category) {
+      query.category = category;
+    }
+    
+    if (search) {
+      query.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } }
+      ];
+    }
+    
+    let menuItems = await MenuItem.find(query);
+    
+    if (sort === 'price-low') {
+      menuItems.sort((a, b) => a.price - b.price);
+    } else if (sort === 'price-high') {
+      menuItems.sort((a, b) => b.price - a.price);
+    } else if (sort === 'popularity') {
+      menuItems.sort((a, b) => b.popularity - a.popularity);
+    }
+    
+    res.json(menuItems);
+  } catch (error) {
+    res.status(500).json({
+      message: 'Server error',
+      ...(process.env.NODE_ENV === 'development' && { error: error.message })
+    });
+  }
+};
+
+// @desc    Get single menu item
+// @route   GET /api/menu/:id
+// @access  Public
+const getMenuItemById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const menuItem = await MenuItem.findById(id);
+    
+    if (!menuItem) {
+      return res.status(404).json({ message: 'Menu item not found' });
+    }
+    
+    res.json(menuItem);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Create menu item
+// @route   POST /api/menu
+// @access  Admin only
+const createMenuItem = async (req, res) => {
+  try {
+    const { name, description, price, category, image, isVeg, isFeatured, isAvailable } = req.body;
+
+    // Validation
+    if (!name || name.trim() === '') {
+      return res.status(400).json({ message: 'Name is required' });
+    }
+
+    if (!description || description.trim() === '') {
+      return res.status(400).json({ message: 'Description is required' });
+    }
+
+    if (!price || typeof price !== 'number' || price <= 0) {
+      return res.status(400).json({ message: 'Price must be a positive number' });
+    }
+
+    if (!category) {
+      return res.status(400).json({ message: 'Category is required' });
+    }
+
+    const validCategories = ['Burgers', 'Chicken', 'Wraps', 'Sides', 'Combos', 'Drinks'];
+    if (!validCategories.includes(category)) {
+      return res.status(400).json({ message: 'Invalid category' });
+    }
+
+    const menuItem = await MenuItem.create({
+      name: name.trim(),
+      description: description.trim(),
+      price,
+      category,
+      image: image || '',
+      isVeg: isVeg || false,
+      isFeatured: isFeatured || false,
+      isAvailable: isAvailable !== undefined ? isAvailable : true
+    });
+    res.status(201).json(menuItem);
+  } catch (error) {
+    res.status(400).json({
+      message: 'Invalid menu item data',
+      ...(process.env.NODE_ENV === 'development' && { error: error.message })
+    });
+  }
+};
+
+// @desc    Update menu item
+// @route   PUT /api/menu/:id
+// @access  Admin only
+const updateMenuItem = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // ObjectId validation
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid menu item ID' });
+    }
+
+    const menuItem = await MenuItem.findById(id);
+    
+    if (!menuItem) {
+      return res.status(404).json({ message: 'Menu item not found' });
+    }
+
+    const { name, description, price, category, image, isVeg, isFeatured, isAvailable } = req.body;
+
+    // Validation for provided fields
+    if (name !== undefined && name.trim() === '') {
+      return res.status(400).json({ message: 'Name cannot be empty' });
+    }
+
+    if (description !== undefined && description.trim() === '') {
+      return res.status(400).json({ message: 'Description cannot be empty' });
+    }
+
+    if (price !== undefined && (typeof price !== 'number' || price <= 0)) {
+      return res.status(400).json({ message: 'Price must be a positive number' });
+    }
+
+    if (category !== undefined) {
+      const validCategories = ['Burgers', 'Chicken', 'Wraps', 'Sides', 'Combos', 'Drinks'];
+      if (!validCategories.includes(category)) {
+        return res.status(400).json({ message: 'Invalid category' });
+      }
+    }
+
+    // Update only provided fields
+    if (name !== undefined) menuItem.name = name.trim();
+    if (description !== undefined) menuItem.description = description.trim();
+    if (price !== undefined) menuItem.price = price;
+    if (category !== undefined) menuItem.category = category;
+    if (image !== undefined) menuItem.image = image;
+    if (isVeg !== undefined) menuItem.isVeg = isVeg;
+    if (isFeatured !== undefined) menuItem.isFeatured = isFeatured;
+    if (isAvailable !== undefined) menuItem.isAvailable = isAvailable;
+
+    await menuItem.save();
+    res.json(menuItem);
+  } catch (error) {
+    res.status(400).json({
+      message: 'Invalid menu item data',
+      ...(process.env.NODE_ENV === 'development' && { error: error.message })
+    });
+  }
+};
+
+// @desc    Delete menu item
+// @route   DELETE /api/menu/:id
+// @access  Admin only
+const deleteMenuItem = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // ObjectId validation
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid menu item ID' });
+    }
+
+    const menuItem = await MenuItem.findById(id);
+    
+    if (!menuItem) {
+      return res.status(404).json({ message: 'Menu item not found' });
+    }
+    
+    await menuItem.deleteOne();
+    res.json({ message: 'Menu item deleted' });
+  } catch (error) {
+    res.status(500).json({
+      message: 'Server error',
+      ...(process.env.NODE_ENV === 'development' && { error: error.message })
+    });
+  }
+};
+
+module.exports = {
+  getMenuItems,
+  getMenuItemById,
+  createMenuItem,
+  updateMenuItem,
+  deleteMenuItem
+};
+
+
+==============================================
+FILE: ./backend/controllers/orderController.js
+==============================================
+const Order = require('../models/Order');
+const MenuItem = require('../models/MenuItem');
+const mongoose = require('mongoose');
+const { validatePaymentVerification } = require('razorpay/dist/utils/razorpay-utils');
+
+// @desc    Get all orders
+// @route   GET /api/orders
+// @access  Admin only
+const getOrders = async (req, res) => {
+  try {
+    const orders = await Order.find().sort({ createdAt: -1 });
+    res.json(orders);
+  } catch (error) {
+    res.status(500).json({
+      message: 'Server error',
+      ...(process.env.NODE_ENV === 'development' && { error: error.message })
+    });
+  }
+};
+
+// @desc    Get single order
+// @route   GET /api/orders/:id
+// @access  Admin only
+const getOrderById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // ObjectId validation
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid order ID' });
+    }
+
+    const order = await Order.findById(id);
+
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    res.json(order);
+  } catch (error) {
+    res.status(500).json({
+      message: 'Server error',
+      ...(process.env.NODE_ENV === 'development' && { error: error.message })
+    });
+  }
+};
+
+// @desc    Create new order
+// @route   POST /api/orders
+// @access  Public
+const createOrder = async (req, res) => {
+  try {
+    const { customerName, phone, email, items, orderType, address, tableNumber, notes, paymentMethod = 'COD' } = req.body;
+    const customerId = req.customer?.id || null;
+
+    // Customer name validation
+    if (!customerName || typeof customerName !== 'string' || customerName.trim().length < 2) {
+      return res.status(400).json({ message: 'Valid customer name is required (minimum 2 characters)' });
+    }
+
+    // Phone validation (10 digits)
+    if (!phone || !/^[0-9]{10}$/.test(phone.trim())) {
+      return res.status(400).json({ message: 'Valid 10-digit phone number is required' });
+    }
+
+    // Email validation (if provided)
+    if (email && email.trim()) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email.trim())) {
+        return res.status(400).json({ message: 'Invalid email format' });
+      }
+    }
+
+    // Order type validation
+    const validOrderTypes = ['Dine-in', 'Takeaway', 'Delivery'];
+    if (!orderType || !validOrderTypes.includes(orderType)) {
+      return res.status(400).json({ message: 'Valid order type is required (Dine-in, Takeaway, or Delivery)' });
+    }
+
+    if (!['COD', 'Online'].includes(paymentMethod)) {
+      return res.status(400).json({ message: 'Payment method must be COD or Online' });
+    }
+
+    // Order type-specific validation
+    if (orderType === 'Delivery' && (!address || typeof address !== 'string' || address.trim().length < 5)) {
+      return res.status(400).json({ message: 'Delivery address is required (minimum 5 characters)' });
+    }
+
+    if (orderType === 'Dine-in' && (!tableNumber || typeof tableNumber !== 'string' || tableNumber.trim().length === 0)) {
+      return res.status(400).json({ message: 'Table number is required for Dine-in orders' });
+    }
+
+    // Items validation
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ message: 'At least one item is required' });
+    }
+
+    // Calculate actual total from database prices
+    let subtotal = 0;
+    const validatedItems = [];
+
+    for (const item of items) {
+      // ObjectId validation for menu item
+      if (!mongoose.Types.ObjectId.isValid(item.menuItem)) {
+        return res.status(400).json({ message: `Invalid menu item ID for ${item.name || 'item'}` });
+      }
+
+      const menuItem = await MenuItem.findById(item.menuItem);
+
+      if (!menuItem) {
+        return res.status(400).json({ message: `Menu item ${item.name || 'item'} not found` });
+      }
+
+      if (!menuItem.isAvailable) {
+        return res.status(400).json({ message: `Menu item ${menuItem.name} is not available` });
+      }
+
+      // Quantity validation
+      // Quantity validation
+      if (
+        !Number.isInteger(item.quantity) ||
+        item.quantity < 1 ||
+        item.quantity > 50
+      ) {
+        return res.status(400).json({
+          message: `Invalid quantity for ${menuItem.name}. Quantity must be between 1 and 50.`
+        });
+      }
+
+      const itemTotal = menuItem.price * item.quantity;
+      subtotal += itemTotal;
+
+      validatedItems.push({
+        menuItem: menuItem._id,
+        name: menuItem.name,
+        price: menuItem.price,
+        quantity: item.quantity
+      });
+    }
+
+    const tax = Math.round(subtotal * 0.05); // 5% tax
+    const total = subtotal + tax;
+
+    const order = new Order({
+      customerName: customerName.trim(),
+      customerId,
+      phone: phone.trim(),
+      email: email ? email.trim() : undefined,
+      items: validatedItems,
+      orderType,
+      address: orderType === 'Delivery' ? address.trim() : undefined,
+      tableNumber: orderType === 'Dine-in' ? tableNumber.trim() : undefined,
+      subtotal,
+      tax,
+      total,
+      paymentMethod,
+      notes: notes ? notes.trim() : undefined
+    });
+
+    await order.validate();
+
+    let razorpayOrder;
+    if (paymentMethod === 'Online') {
+      razorpayOrder = await req.app.locals.razorpay.orders.create({
+        amount: total * 100,
+        currency: 'INR',
+        receipt: order.orderId
+      });
+
+      order.razorpayOrderId = razorpayOrder.id;
+    } else {
+      order.paymentStatus = 'Pending';
+    }
+
+    await order.save();
+
+    const orderResponse = {
+      ...order.toObject(),
+      paymentMethod
+    };
+
+    if (paymentMethod === 'Online') {
+      orderResponse.razorpayOrderId = razorpayOrder.id;
+      orderResponse.total = total;
+      orderResponse.keyId = process.env.RAZORPAY_KEY_ID;
+    }
+
+    res.status(201).json(orderResponse);
+  } catch (error) {
+    res.status(400).json({
+      message: 'Invalid order data',
+      ...(process.env.NODE_ENV === 'development' && { error: error.message })
+    });
+  }
+};
+
+// @desc    Get orders for the authenticated customer
+// @route   GET /api/orders/my-orders
+// @access  Customer only
+const getMyOrders = async (req, res) => {
+  try {
+    const orders = await Order.find({ customerId: req.customer.id }).sort({ createdAt: -1 });
+    res.json(orders);
+  } catch (error) {
+    res.status(500).json({
+      message: 'Server error',
+      ...(process.env.NODE_ENV === 'development' && { error: error.message })
+    });
+  }
+};
+
+// @desc    Verify Razorpay payment and mark order as paid
+// @route   POST /api/orders/verify-payment
+// @access  Public
+const verifyPayment = async (req, res) => {
+  try {
+    const { orderId, paymentId, razorpayOrderId, signature } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(orderId)) {
+      return res.status(400).json({ message: 'Invalid order ID' });
+    }
+
+    if (!paymentId || !razorpayOrderId || !signature) {
+      return res.status(400).json({ message: 'Payment verification details are required' });
+    }
+
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    if (order.paymentMethod !== 'Online') {
+      return res.status(400).json({ message: 'Payment verification is only available for online orders' });
+    }
+
+    if (order.razorpayOrderId !== razorpayOrderId) {
+      return res.status(400).json({ message: 'Razorpay order ID does not match' });
+    }
+
+    const isValid = validatePaymentVerification(
+      { order_id: razorpayOrderId, payment_id: paymentId },
+      signature,
+      process.env.RAZORPAY_KEY_SECRET
+    );
+
+    if (!isValid) {
+      order.paymentStatus = 'Failed';
+      await order.save();
+      return res.status(400).json({ message: 'Payment verification failed' });
+    }
+
+    order.paymentStatus = 'Paid';
+    order.paymentId = paymentId;
+    await order.save();
+
+    res.json({ success: true, message: 'Payment verified successfully' });
+  } catch (error) {
+    res.status(400).json({
+      message: 'Payment verification failed',
+      ...(process.env.NODE_ENV === 'development' && { error: error.message })
+    });
+  }
+};
+
+// @desc    Update order status
+// @route   PUT /api/orders/:id
+// @access  Admin only
+const updateOrder = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    // ObjectId validation
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid order ID' });
+    }
+
+    const order = await Order.findById(id);
+
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    // Status validation if provided
+    if (status) {
+      const validStatuses = ['Pending', 'Confirmed', 'Preparing', 'Ready', 'Out for Delivery', 'Completed', 'Cancelled'];
+      if (!validStatuses.includes(status)) {
+        return res.status(400).json({ message: 'Invalid order status' });
+      }
+      order.status = status;
+    }
+
+    await order.save();
+    res.json(order);
+  } catch (error) {
+    res.status(400).json({
+      message: 'Invalid order data',
+      ...(process.env.NODE_ENV === 'development' && { error: error.message })
+    });
+  }
+};

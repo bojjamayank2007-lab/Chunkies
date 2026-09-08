@@ -37,8 +37,9 @@ const errorHandler = (err, req, res, next) => {
   res.status(error.statusCode || 500).json({
     success: false,
     message: error.message || 'Server Error',
-    // Only include stack trace in development
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+    // Never expose stack traces in production; keep them in development (or
+    // when NODE_ENV is unset, which behaves like a dev environment).
+    ...(process.env.NODE_ENV !== 'production' && { stack: err.stack })
   });
 };
 

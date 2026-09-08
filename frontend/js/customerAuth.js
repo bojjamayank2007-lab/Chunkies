@@ -2,15 +2,6 @@ const customerApiBase = `${API_BASE_URL}/auth/customer`;
 window.isCustomerLoggedIn = false;
 window.currentCustomer = null;
 
-function escapeHTML(value) {
-    return String(value ?? '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-}
-
 async function customerRequest(path, options = {}) {
     return safeFetch(`${customerApiBase}${path}`, {
         ...options,
@@ -166,6 +157,132 @@ function setupCustomerAuthForms() {
     }
 }
 
+
+function renderOrderTimeline(status, orderType) {
+    let steps = ['Pending', 'Confirmed', 'Preparing', 'Ready', 'Completed'];
+
+    if (orderType === 'Delivery') {
+        steps = ['Pending', 'Confirmed', 'Preparing', 'Ready', 'Out for Delivery', 'Completed'];
+    }
+
+    if (status === 'Cancelled') {
+        return `
+            <div class="order-timeline cancelled">
+                <div class="timeline-message">Order Cancelled</div>
+            </div>
+        `;
+    }
+
+    const currentIndex = steps.indexOf(status);
+
+    return `
+        <div class="order-timeline">
+            ${steps.map((step, index) => {
+                const isCompleted = currentIndex !== -1 && index < currentIndex;
+                const isCurrent = index === currentIndex;
+                const stepClass = isCompleted ? 'completed' : isCurrent ? 'current' : '';
+                return `
+                    <div class="timeline-step ${stepClass}">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-label">${escapeHTML(step)}</div>
+                    </div>
+                `;
+            }).join('')}
+        </div>
+    `;
+}
+
+
+
+
+
+
+
+function reorderOrder(orderId) {
+    if (!window.isCustomerLoggedIn) {
+        window.location.href = 'customer-login.html';
+        return;
+    }
+
+    const orders = window.currentCustomerOrders || [];
+    const order = orders.find(o => o._id === orderId || o.orderId === orderId);
+
+    if (!order || !order.items || order.items.length === 0) {
+        alert('This order cannot be reordered.');
+        return;
+    }
+
+    try {
+        const items = order.items.map(item => ({
+            id: item.menuItem || item._id || '',
+            name: item.name || '',
+            price: Number(item.price) || 0,
+            quantity: Number(item.quantity) || 1
+        }));
+
+        localStorage.setItem('chunkiesCart', JSON.stringify(items));
+        window.location.href = 'cart.html';
+    } catch (error) {
+        alert('Failed to reorder. Please try again.');
+    }
+}
+
+
+function renderOrderCard(order) {
+    const orderId = escapeHTML(order.orderId || '');
+    const orderDate = escapeHTML(new Date(order.createdAt).toLocaleDateString());
+    const orderTime = escapeHTML(new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+    const orderType = escapeHTML(order.orderType || '');
+    const status = escapeHTML(order.status || 'Pending');
+    const statusClass = 'order-status-badge status-' + String(order.status || 'Pending').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    const paymentMethod = escapeHTML(order.paymentMethod || 'COD');
+    const paymentStatus = escapeHTML(order.paymentStatus || 'Pending');
+    const paymentClass = 'order-status-badge payment-' + String(order.paymentStatus || 'Pending').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    const deliveryAddress = order.address ? `<div class="order-info-line"><strong>Delivery Address:</strong> ${escapeHTML(order.address)}</div>` : '';
+    const tableNumber = order.tableNumber ? `<div class="order-info-line"><strong>Table Number:</strong> ${escapeHTML(order.tableNumber)}</div>` : '';
+    const itemsList = (order.items || []).map(item => {
+        const itemName = escapeHTML(item.name || '');
+        const quantity = Number(item.quantity) || 0;
+        const price = Number(item.price) || 0;
+        return `
+            <div class="order-item-row">
+                <span class="order-item-name">${itemName} × ${quantity}</span>
+                <span class="order-item-price">₹${escapeHTML((price * quantity).toFixed(2))}</span>
+            </div>
+        `;
+    }).join('');
+    const subtotal = Number(order.subtotal) || 0;
+    const tax = Number(order.tax) || 0;
+    const total = Number(order.total) || 0;
+
+    return `
+        <div class="order-card">
+            <div class="order-card-header">
+                <div>
+                    <div class="order-card-id">${orderId}</div>
+                    <div class="order-card-date">${orderDate} · ${orderTime}</div>
+                </div>
+                <span class="${statusClass}">${status}</span>
+            </div>
+            ${renderOrderTimeline(order.status, order.orderType)}
+            <div class="order-info-line"><strong>Order Type:</strong> ${orderType}</div>
+            <div class="order-info-line"><strong>Payment:</strong> ${paymentMethod} <span class="${paymentClass}">${paymentStatus}</span></div>
+            ${deliveryAddress}
+            ${tableNumber}
+            <div class="order-items-list">
+                ${itemsList || '<div class="order-info-line">No items</div>'}
+            </div>
+            <div class="order-summary-line"><span>Subtotal</span><span>₹${escapeHTML(subtotal.toFixed(2))}</span></div>
+            <div class="order-summary-line"><span>Tax</span><span>₹${escapeHTML(tax.toFixed(2))}</span></div>
+            <div class="order-summary-line order-summary-total"><span>Total</span><span>₹${escapeHTML(total.toFixed(2))}</span></div>
+            <div class="order-card-actions">
+                <button class="btn btn-primary btn-block" onclick="reorderOrder('${escapeHTML(order._id || '')}')">Reorder</button>
+                <a class="btn btn-secondary btn-block" href="receipt.html?id=${escapeHTML(order._id || '')}">View Receipt</a>
+            </div>
+        </div>
+    `;
+}
+
 async function loadCustomerOrders() {
     const customerName = document.getElementById('customerOrdersName');
     const ordersContainer = document.getElementById('customerOrdersList');
@@ -182,23 +299,14 @@ async function loadCustomerOrders() {
 
         if (customerName) customerName.textContent = customer.name;
         const orders = await fetchMyOrders();
+        window.currentCustomerOrders = orders;
 
         if (orders.length === 0) {
             ordersContainer.innerHTML = '<p class="empty-cart">You have not placed any orders yet.</p>';
             return;
         }
 
-        ordersContainer.innerHTML = orders.map(order => `
-            <div class="cart-item">
-                <div class="cart-item-details">
-                    <div class="cart-item-name">${escapeHTML(order.orderId)}</div>
-                    <div class="cart-item-price">${escapeHTML(new Date(order.createdAt).toLocaleDateString())}</div>
-                    <div>Type: ${escapeHTML(order.orderType)}</div>
-                    <div>Status: ${escapeHTML(order.status)}</div>
-                </div>
-                <div class="cart-item-price">₹${escapeHTML(order.total)}</div>
-            </div>
-        `).join('');
+        ordersContainer.innerHTML = orders.map(order => renderOrderCard(order)).join('');
     } catch (error) {
         ordersContainer.innerHTML = `<p class="empty-cart">${escapeHTML(error.message)}</p>`;
     }

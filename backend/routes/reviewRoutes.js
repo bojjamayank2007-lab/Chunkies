@@ -13,7 +13,7 @@ const { protect } = require('../middleware/authMiddleware');
 // Dedicated rate limiter for review submissions: 5 submissions per 15 minutes per IP
 const reviewLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5,
+  max: 20,
   message: 'Too many review submissions, please try again later',
   standardHeaders: true,
   legacyHeaders: false

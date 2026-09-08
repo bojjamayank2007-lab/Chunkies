@@ -1,7 +1,9 @@
-// API Configuration
+const PRODUCTION_API_URL = 'https://major-cougars-cough.loca.lt/api';
+
 const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
     ? 'http://localhost:5001/api'
-    : '/api';
+    : PRODUCTION_API_URL;
+// API Configuration
 
 // Shared safe fetch helper
 // 1. Accepts same arguments as fetch
@@ -26,6 +28,16 @@ async function safeFetch(url, options = {}) {
     }
 
     return data;
+}
+
+// Shared HTML escaping helper (single source of truth for XSS-safe rendering)
+function escapeHTML(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
 }
 
 const adminFetch = async (url, options = {}) => {
@@ -107,6 +119,10 @@ const api = {
 
     getOrderById: async (id) => {
         return safeFetch(`${API_BASE_URL}/orders/${id}`, { credentials: 'include' });
+    },
+
+    getMyOrderById: async (id) => {
+        return safeFetch(`${API_BASE_URL}/orders/my-orders/${id}`, { credentials: 'include' });
     },
 
     createOrder: async (data) => {

@@ -22,19 +22,20 @@ async function loadRestaurantInfo() {
         const footerHours = footerContactPs[2];
         
         if (footerAddress && restaurant.address?.fullAddress) {
-            footerAddress.innerHTML = `<i class="fas fa-map-marker-alt"></i> ${restaurant.address.fullAddress}`;
+            footerAddress.innerHTML = `<i class="fas fa-map-marker-alt"></i> ${escapeHTML(restaurant.address.fullAddress)}`;
         }
         if (footerPhone && restaurant.phone) {
-            footerPhone.innerHTML = `<i class="fas fa-phone"></i> ${restaurant.phone}`;
+            footerPhone.innerHTML = `<i class="fas fa-phone"></i> ${escapeHTML(restaurant.phone)}`;
         }
         if (footerHours && restaurant.openingHours) {
-            footerHours.innerHTML = `<i class="fas fa-clock"></i> ${restaurant.openingHours}`;
+            footerHours.innerHTML = `<i class="fas fa-clock"></i> ${escapeHTML(restaurant.openingHours)}`;
         }
         
         // Update mobile call button
         const mobileCall = document.querySelector('.mobile-call');
+        const safePhone = typeof restaurant.phone === 'string' ? restaurant.phone : '';
         if (mobileCall && restaurant.phone) {
-            mobileCall.href = `tel:${restaurant.phone.replace(/\s/g, '')}`;
+            mobileCall.href = `tel:${safePhone.replace(/\s/g, '')}`;
         }
         
         // Update contact page specific elements
@@ -49,7 +50,7 @@ async function loadRestaurantInfo() {
         
         if (contactAddress && restaurant.address?.fullAddress) {
             const addressParts = restaurant.address.fullAddress.split(',').map(p => p.trim());
-            contactAddress.innerHTML = addressParts.map(p => `${p}<br>`).join('').replace(/<br>$/, '');
+            contactAddress.innerHTML = addressParts.map(p => `${escapeHTML(p)}<br>`).join('').replace(/<br>$/, '');
         }
         if (contactPhone && restaurant.phone) {
             contactPhone.textContent = restaurant.phone;
@@ -61,7 +62,7 @@ async function loadRestaurantInfo() {
             contactDirections.href = restaurant.googleMapsUrl;
         }
         if (contactCall && restaurant.phone) {
-            contactCall.href = `tel:${restaurant.phone.replace(/\s/g, '')}`;
+            contactCall.href = `tel:${safePhone.replace(/\s/g, '')}`;
         }
         if (mapPlaceholder && restaurant.address?.fullAddress) {
             mapPlaceholder.textContent = restaurant.address.fullAddress;
@@ -100,7 +101,7 @@ async function loadRestaurantInfo() {
         const footerServices = document.querySelector('.footer-section:nth-child(4)');
         if (footerServices && restaurant.services && restaurant.services.length > 0) {
             footerServices.innerHTML = '<h4>Services</h4>' + 
-                restaurant.services.map(service => `<p>${service}</p>`).join('');
+                restaurant.services.map(service => `<p>${escapeHTML(service)}</p>`).join('');
         }
         
     } catch (error) {

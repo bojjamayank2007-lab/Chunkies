@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reviews — CHUNKIES</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/hero.css">
+    <link rel="stylesheet" href="css/menu.css">
+    <link rel="stylesheet" href="css/reviews.css">
+    <link rel="stylesheet" href="css/footer.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="css/mobile-app.css">
+    <link rel="stylesheet" href="css/final-fixes.css">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+</head>
+<body class="reviews-page">
+    <nav class="navbar" id="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="index.html">CHUNKIES</a>
+                <span class="nav-brand-hindi">चंकीज़</span>
+            </div>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="index.html" class="nav-link">HOME</a></li>
+                <li><a href="menu.html" class="nav-link">MENU</a></li>
+                <li><a href="about.html" class="nav-link">ABOUT</a></li>
+                <li><a href="reviews.html" class="nav-link active">REVIEWS</a></li>
+                <li><a href="contact.html" class="nav-link">CONTACT</a></li>
+            </ul>
+            <div class="nav-actions">
+                <div id="navProfileAction" class="nav-profile-action"></div>
+                <button class="cart-btn" id="cartBtn"><i class="fas fa-shopping-cart"></i><span class="cart-count" id="cartCount">0</span></button>
+                <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+            </div>
+        </div>
+    </nav>
+
+    <section class="page-header">
+        <div class="container">
+            <h1>CUSTOMER REVIEWS</h1>
+            <p>See what people are saying about CHUNKIES</p>
+        </div>
+    </section>
+
+    <section class="reviews" id="reviews">
+        <div class="container">
+            <div class="rating-summary">
+                <div class="rating-large">
+                    <span class="rating-number">4.0</span>
+                    <span class="rating-total">/ 5</span>
+                </div>
+                <div class="rating-info">
+                    <p>500+ Google Reviews</p>
+                    <div class="stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="reviews-grid" id="reviewsGrid">
+                <div class="loading">Loading reviews...</div>
+            </div>
+
+            <div class="review-form">
+                <h3>LEAVE A REVIEW</h3>
+                <form>
+                    <div class="rating-input">
+                        <button type="button"><i class="fas fa-star"></i></button>
+                        <button type="button"><i class="fas fa-star"></i></button>
+                        <button type="button"><i class="fas fa-star"></i></button>
+                        <button type="button"><i class="fas fa-star"></i></button>
+                        <button type="button"><i class="fas fa-star"></i></button>
+                    </div>
+                    <div class="form-group">
+                        <label for="reviewName">Your Name *</label>
+                        <input type="text" id="reviewName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reviewText">Your Review *</label>
+                        <textarea id="reviewText" rows="4" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit Review</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>CHUNKIES</h3>
+                    <p class="footer-hindi">चंकीज़</p>
+                    <p>Big flavour. Big chunkies.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p><i class="fas fa-map-marker-alt"></i> Jogeshwari West, Mumbai</p>
+                    <p><i class="fas fa-phone"></i> 090040 94979</p>
+                    <p><i class="fas fa-clock"></i> Open 24 Hours</p>
+                </div>
+                
+                <div class="footer-section quick-links-footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="menu.html">Menu</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section services-footer-section">
+                    <h4>Services</h4>
+                    <p>Dine-in</p>
+                    <p>Takeaway</p>
+                    <p>Delivery</p>
+                </div>
+            </div>
+            
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 CHUNKIES. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <div class="cart-overlay" id="cartOverlay"></div>
+    <div class="cart-drawer" id="cartDrawer">
+        <div class="cart-content">
+            <div class="cart-header">
+                <h3>Your Cart</h3>
+                <button class="cart-close" id="cartClose"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="cart-items" id="cartItems"><p class="empty-cart">Your cart is empty</p></div>
+            <div class="cart-footer">
+                <div class="cart-total"><span>Total:</span><span id="cartTotal">₹0</span></div>
+                <a href="cart.html" class="btn btn-primary btn-block">PROCEED TO CHECKOUT</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/customerAuth.js"></script>
+    <script src="js/navbar.js"></script>
+    <script src="js/menu.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/reviews.js"></script>
+    <script src="js/page-transitions.js"></script>
+</body>
+</html>

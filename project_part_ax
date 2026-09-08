@@ -1,0 +1,500 @@
+        unlockPageScroll();
+        document.removeEventListener('wheel', preventBackgroundWheel);
+    }
+
+    if (cartClose) {
+        cartClose.addEventListener('click', closeCart);
+    }
+
+    if (cartOverlay) {
+        cartOverlay.addEventListener('click', closeCart);
+    }
+    
+    // Handle escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && cartDrawer.classList.contains('active')) {
+            closeCart();
+        }
+    });
+    
+    // Handle checkout button clicks using event delegation
+    document.addEventListener('click', (event) => {
+        const checkoutLink = event.target.closest('a[href="cart.html"]');
+        if (checkoutLink) {
+            
+            // Check if cart is empty
+            if (cart.length === 0) {
+                event.preventDefault();
+                alert('Your cart is empty. Please add items before checkout.');
+                return;
+            }
+            
+            // Cart is not empty, allow navigation
+        }
+    });
+}
+
+// Show notification
+function showNotification(message) {
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed;
+        bottom: 80px;
+        right: 20px;
+        background-color: var(--success-color);
+        color: white;
+        padding: 16px 24px;
+        border-radius: 8px;
+        z-index: 2000;
+        animation: slideIn 0.3s ease;
+    `;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
+
+// Update checkout button state
+function updateCheckoutButton() {
+    const checkoutBtn = document.querySelector('#checkoutForm button[type="submit"]');
+    const checkoutLinks = document.querySelectorAll('a[href="cart.html"]');
+    const isEmpty = cart.length === 0;
+
+    if (checkoutBtn) {
+        checkoutBtn.disabled = isEmpty;
+        checkoutBtn.style.opacity = isEmpty ? '0.5' : '1';
+        checkoutBtn.style.cursor = isEmpty ? 'not-allowed' : 'pointer';
+    }
+
+    checkoutLinks.forEach(link => {
+        if (isEmpty) {
+            link.style.pointerEvents = 'none';
+            link.style.opacity = '0.5';
+        } else {
+            link.style.pointerEvents = '';
+            link.style.opacity = '';
+        }
+    });
+}
+
+// Checkout form submission
+function setupCheckoutForm() {
+    const checkoutForm = document.getElementById('checkoutForm');
+    if (!checkoutForm) return;
+
+    checkoutForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        if (cart.length === 0) {
+            alert('Your cart is empty. Please add items before checkout.');
+            return;
+        }
+
+        const formData = new FormData(checkoutForm);
+        const orderData = {
+            customerName: formData.get('customerName'),
+            phone: formData.get('phone'),
+            email: formData.get('email') || '',
+            items: cart.map(item => ({
+                menuItem: item.id,
+                name: item.name,
+                quantity: item.quantity
+            })),
+            orderType: formData.get('orderType'),
+            address: formData.get('orderType') === 'Delivery' ? formData.get('address') : undefined,
+            tableNumber: formData.get('orderType') === 'Dine-in' ? formData.get('tableNumber') : undefined,
+            paymentMethod: formData.get('paymentMethod'),
+            notes: formData.get('notes') || ''
+        };
+
+        try {
+            const response = await api.createOrder(orderData);
+
+            if (orderData.paymentMethod === 'COD') {
+                document.getElementById('successOrderId').textContent = response.orderId || 'N/A';
+                document.getElementById('successPaymentStatus').textContent = 'Pending — Cash on Delivery';
+                document.getElementById('successModal').classList.add('active');
+                clearCart();
+                checkoutForm.reset();
+                return;
+            }
+
+            if (orderData.paymentMethod !== 'Online' || !response.razorpayOrderId || !window.Razorpay) {
+                throw new Error('Payment service is unavailable. Please try again.');
+            }
+
+            const razorpayCheckout = new Razorpay({
+                key: response.keyId,
+                amount: response.total * 100,
+                currency: 'INR',
+                name: 'CHUNKIES',
+                description: `Order ${response.orderId}`,
+                order_id: response.razorpayOrderId,
+                handler: async (paymentResponse) => {
+                    try {
+                        await api.verifyPayment({
+                            orderId: response._id,
+                            paymentId: paymentResponse.razorpay_payment_id,
+                            razorpayOrderId: paymentResponse.razorpay_order_id,
+                            signature: paymentResponse.razorpay_signature
+                        });
+
+                        document.getElementById('successOrderId').textContent = response.orderId || 'N/A';
+                        document.getElementById('successPaymentStatus').textContent = 'Paid';
+                        document.getElementById('successModal').classList.add('active');
+                        clearCart();
+                        checkoutForm.reset();
+                    } catch (error) {
+                        alert('Payment verification failed: ' + error.message);
+                    }
+                }
+            });
+
+            razorpayCheckout.on('payment.failed', (payment) => {
+                alert('Payment failed: ' + payment.error.description);
+            });
+            razorpayCheckout.open();
+        } catch (error) {
+            alert('Failed to place order: ' + error.message);
+        }
+    });
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    loadCart();
+    updateCartCount();
+    renderCart();
+    setupCartDrawer();
+    setupCheckoutForm();
+});
+
+
+==============================================
+FILE: ./frontend/js/contact.js
+==============================================
+// Checkout form field toggling (form submission handled in cart.js)
+function setupCheckoutFormFields() {
+    const orderTypeSelect = document.getElementById('orderType');
+    const addressGroup = document.getElementById('addressGroup');
+    const tableGroup = document.getElementById('tableGroup');
+    const addressInput = document.getElementById('address');
+    const tableInput = document.getElementById('tableNumber');
+
+    if (!orderTypeSelect) return;
+
+    // Toggle fields based on order type
+    orderTypeSelect.addEventListener('change', () => {
+        const orderType = orderTypeSelect.value;
+
+        if (addressGroup) {
+            addressGroup.style.display = orderType === 'Delivery' ? 'block' : 'none';
+        }
+
+        if (tableGroup) {
+            tableGroup.style.display = orderType === 'Dine-in' ? 'block' : 'none';
+        }
+
+        if (addressInput) {
+            addressInput.required = orderType === 'Delivery';
+        }
+
+        if (tableInput) {
+            tableInput.required = orderType === 'Dine-in';
+        }
+    });
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    setupCheckoutFormFields();
+});
+
+
+==============================================
+FILE: ./frontend/js/customerAuth.js
+==============================================
+const customerApiBase = `${API_BASE_URL}/auth/customer`;
+window.isCustomerLoggedIn = false;
+window.currentCustomer = null;
+
+function escapeHTML(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+async function customerRequest(path, options = {}) {
+    return safeFetch(`${customerApiBase}${path}`, {
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...(options.headers || {})
+        },
+        credentials: 'include'
+    });
+}
+
+async function registerCustomer(customerData) {
+    return customerRequest('/register', {
+        method: 'POST',
+        body: JSON.stringify(customerData)
+    });
+}
+
+async function loginCustomer(email, password) {
+    return customerRequest('/login', {
+        method: 'POST',
+        body: JSON.stringify({ email, password })
+    });
+}
+
+async function logoutCustomer() {
+    return customerRequest('/logout', { method: 'POST' });
+}
+
+async function getCustomer() {
+    try {
+        const data = await safeFetch(`${customerApiBase}/me`, { credentials: 'include' });
+        window.isCustomerLoggedIn = true;
+        window.currentCustomer = data.customer;
+        return data.customer;
+    } catch (error) {
+        if (error.status === 401 || error.status === 403) {
+            window.isCustomerLoggedIn = false;
+            window.currentCustomer = null;
+            return null;
+        }
+        throw error;
+    }
+}
+
+function getPostAuthRedirect() {
+    const redirect = new URLSearchParams(window.location.search).get('redirect');
+    if (!redirect) return 'customer-orders.html';
+
+    try {
+        const redirectUrl = new URL(redirect, window.location.origin);
+        return redirectUrl.origin === window.location.origin
+            ? `${redirectUrl.pathname}${redirectUrl.search}${redirectUrl.hash}`
+            : 'customer-orders.html';
+    } catch (error) {
+        return 'customer-orders.html';
+    }
+}
+
+function promptLoginForCart() {
+    let modal = document.getElementById('loginRequiredModal');
+
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.id = 'loginRequiredModal';
+        modal.innerHTML = `
+            <div class="modal-content login-required-modal-content" role="dialog" aria-modal="true" aria-labelledby="loginRequiredTitle">
+                <button type="button" class="modal-close" id="loginRequiredClose" aria-label="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+                <h2 id="loginRequiredTitle">Login Required</h2>
+                <p>Please login or create an account to add items to your cart.</p>
+                <div class="login-required-actions">
+                    <a class="btn btn-primary" id="loginRequiredLogin">Login</a>
+                    <a class="btn btn-secondary" id="loginRequiredSignUp">Create Account</a>
+                </div>
+            </div>
+        `;
+        modal.addEventListener('click', event => {
+            if (event.target === modal) modal.classList.remove('active');
+        });
+        document.body.appendChild(modal);
+
+        const closeBtn = document.getElementById('loginRequiredClose');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => modal.classList.remove('active'));
+        }
+    }
+
+    const redirect = encodeURIComponent(`${window.location.pathname}${window.location.search}${window.location.hash}`);
+    const loginUrl = `customer-login.html?redirect=${redirect}`;
+    document.getElementById('loginRequiredLogin').href = loginUrl;
+    document.getElementById('loginRequiredSignUp').href = loginUrl;
+    modal.classList.add('active');
+}
+
+async function fetchMyOrders() {
+    return safeFetch(`${API_BASE_URL}/orders/my-orders`, { credentials: 'include' });
+}
+
+function setFormMessage(elementId, message, isError = false) {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+
+    element.textContent = message;
+    element.style.color = isError ? 'var(--primary-color)' : 'var(--success-color)';
+}
+
+function setupCustomerAuthForms() {
+    const loginForm = document.getElementById('customerLoginForm');
+    const registerForm = document.getElementById('customerRegisterForm');
+
+    if (loginForm) {
+        loginForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const formData = new FormData(loginForm);
+            setFormMessage('customerLoginMessage', 'Signing in...');
+
+            try {
+                const result = await loginCustomer(formData.get('email'), formData.get('password'));
+                window.isCustomerLoggedIn = true;
+                window.currentCustomer = result.customer;
+                window.location.href = getPostAuthRedirect();
+            } catch (error) {
+                setFormMessage('customerLoginMessage', error.message, true);
+            }
+        });
+    }
+
+    if (registerForm) {
+        registerForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const formData = new FormData(registerForm);
+            setFormMessage('customerRegisterMessage', 'Creating your account...');
+
+            try {
+                const customerData = {
+                    name: formData.get('name'),
+                    email: formData.get('email'),
+                    phone: formData.get('phone'),
+                    password: formData.get('password')
+                };
+                await registerCustomer(customerData);
+                const result = await loginCustomer(customerData.email, customerData.password);
+                window.isCustomerLoggedIn = true;
+                window.currentCustomer = result.customer;
+                window.location.href = getPostAuthRedirect();
+            } catch (error) {
+                setFormMessage('customerRegisterMessage', error.message, true);
+            }
+        });
+    }
+}
+
+async function loadCustomerOrders() {
+    const customerName = document.getElementById('customerOrdersName');
+    const ordersContainer = document.getElementById('customerOrdersList');
+    const logoutButton = document.getElementById('customerLogoutButton');
+
+    if (!ordersContainer) return;
+
+    try {
+        const customer = await getCustomer();
+        if (!customer) {
+            window.location.href = 'customer-login.html';
+            return;
+        }
+
+        if (customerName) customerName.textContent = customer.name;
+        const orders = await fetchMyOrders();
+
+        if (orders.length === 0) {
+            ordersContainer.innerHTML = '<p class="empty-cart">You have not placed any orders yet.</p>';
+            return;
+        }
+
+        ordersContainer.innerHTML = orders.map(order => `
+            <div class="cart-item">
+                <div class="cart-item-details">
+                    <div class="cart-item-name">${escapeHTML(order.orderId)}</div>
+                    <div class="cart-item-price">${escapeHTML(new Date(order.createdAt).toLocaleDateString())}</div>
+                    <div>Type: ${escapeHTML(order.orderType)}</div>
+                    <div>Status: ${escapeHTML(order.status)}</div>
+                </div>
+                <div class="cart-item-price">₹${escapeHTML(order.total)}</div>
+            </div>
+        `).join('');
+    } catch (error) {
+        ordersContainer.innerHTML = `<p class="empty-cart">${escapeHTML(error.message)}</p>`;
+    }
+
+    if (logoutButton) {
+        logoutButton.addEventListener('click', async () => {
+            try {
+                await logoutCustomer();
+            } finally {
+                window.location.href = 'customer-login.html';
+            }
+        });
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    setupCustomerAuthForms();
+    loadCustomerOrders();
+});
+
+
+==============================================
+FILE: ./frontend/js/main.js
+==============================================
+// Main JavaScript file
+document.addEventListener('DOMContentLoaded', () => {
+    // Add smooth scroll behavior
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+
+    // Add animation on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+
+    // Observe elements for animation
+    document.querySelectorAll('.menu-card, .review-card, .service-card, .highlight').forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(20px)';
+        el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        observer.observe(el);
+    });
+
+});
+
+
+==============================================
+FILE: ./frontend/js/menu.js
+==============================================
+// Menu functionality
+let allMenuItems = [];
+let currentFilter = 'all';
+let currentSearch = '';
+let currentSort = 'default';
+
+// Render menu card
+function renderMenuCard(item) {
+    const vegIcon = item.isVeg ? '🟢' : '🔴';
+    const vegClass = item.isVeg ? 'veg' : 'non-veg';
+    const featuredBadge = item.isFeatured ? '<div class="menu-card-badge">Featured</div>' : '';
+    const stars = renderStars(item.rating);

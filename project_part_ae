@@ -1,0 +1,500 @@
+                order.status.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z-]/g, '')
+            )}">
+                ${escapeHTML(order.status)}
+            </span>
+        </p>
+    </div>
+`;
+
+        document.getElementById('orderModal').classList.add('active');
+    } catch (error) {
+        console.error('Error viewing order:', error);
+        alert('Failed to load order details');
+    }
+}
+
+function closeOrderModal() {
+    document.getElementById('orderModal').classList.remove('active');
+}
+
+// Delete Order
+async function deleteOrder(id) {
+    if (!confirm('Are you sure you want to delete this order?')) return;
+
+    try {
+        await api.deleteOrder(id);
+        alert('Order deleted successfully');
+        loadOrders();
+    } catch (error) {
+        console.error('Error deleting order:', error);
+        alert('Failed to delete order');
+    }
+}
+
+// Load Menu
+async function loadMenu() {
+    try {
+        const menuItems = await api.getMenu();
+        allMenuItems = menuItems;
+
+        document.getElementById('menuTable').innerHTML = menuItems.map(item => {
+            const safeId = escapeHTML(item._id);
+
+            return `
+            <tr>
+                <td>
+                    <div style="width: 48px; height: 48px; background: var(--bg-dark); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-utensils" style="color: var(--text-light);"></i>
+                    </div>
+                </td>
+                <td>${escapeHTML(item.name)}</td>
+                <td>${escapeHTML(item.category)}</td>
+                <td>₹${escapeHTML(item.price)}</td>
+                <td>${item.isFeatured ? '✓' : '✗'}</td>
+                <td>${item.isAvailable ? '✓' : '✗'}</td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="action-btn" onclick="editMenuItem('${safeId}')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="action-btn delete" onclick="deleteMenuItem('${safeId}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+        }).join('');
+    } catch (error) {
+        console.error('Error loading menu:', error);
+        document.getElementById('menuTable').innerHTML = '<tr><td colspan="7">Failed to load menu</td></tr>';
+    }
+}
+
+// Menu Modal
+function openMenuModal() {
+    document.getElementById('menuModalTitle').textContent = 'Add Menu Item';
+    document.getElementById('menuForm').reset();
+    document.getElementById('menuItemId').value = '';
+    document.getElementById('menuItemAvailable').checked = true;
+    document.getElementById('menuModal').classList.add('active');
+}
+
+function closeMenuModal() {
+    document.getElementById('menuModal').classList.remove('active');
+}
+
+// Edit Menu Item
+function editMenuItem(id) {
+    const item = allMenuItems.find(i => i._id === id);
+    if (!item) return;
+
+    document.getElementById('menuModalTitle').textContent = 'Edit Menu Item';
+    document.getElementById('menuItemId').value = item._id;
+    document.getElementById('menuItemName').value = item.name;
+    document.getElementById('menuItemDescription').value = item.description;
+    document.getElementById('menuItemPrice').value = item.price;
+    document.getElementById('menuItemCategory').value = item.category;
+    document.getElementById('menuItemImage').value = item.image || '';
+    document.getElementById('menuItemVeg').checked = item.isVeg;
+    document.getElementById('menuItemFeatured').checked = item.isFeatured;
+    document.getElementById('menuItemAvailable').checked = item.isAvailable;
+
+    document.getElementById('menuModal').classList.add('active');
+}
+
+// Menu Form Submit
+document.getElementById('menuForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const id = document.getElementById('menuItemId').value;
+    const menuItemData = {
+        name: document.getElementById('menuItemName').value,
+        description: document.getElementById('menuItemDescription').value,
+        price: parseFloat(document.getElementById('menuItemPrice').value),
+        category: document.getElementById('menuItemCategory').value,
+        image: document.getElementById('menuItemImage').value,
+        isVeg: document.getElementById('menuItemVeg').checked,
+        isFeatured: document.getElementById('menuItemFeatured').checked,
+        isAvailable: document.getElementById('menuItemAvailable').checked
+    };
+
+    try {
+        if (id) {
+            await api.updateMenuItem(id, menuItemData);
+            alert('Menu item updated successfully');
+        } else {
+            await api.createMenuItem(menuItemData);
+            alert('Menu item created successfully');
+        }
+
+        closeMenuModal();
+        loadMenu();
+    } catch (error) {
+        console.error('Error saving menu item:', error);
+        alert('Failed to save menu item');
+    }
+});
+
+// Delete Menu Item
+async function deleteMenuItem(id) {
+    if (!confirm('Are you sure you want to delete this menu item?')) return;
+
+    try {
+        await api.deleteMenuItem(id);
+        alert('Menu item deleted successfully');
+        loadMenu();
+    } catch (error) {
+        console.error('Error deleting menu item:', error);
+        alert('Failed to delete menu item');
+    }
+}
+
+// Load Reviews
+async function loadReviews() {
+    try {
+        const reviews = await api.getReviews();
+        allReviews = reviews;
+
+        document.getElementById('reviewsTable').innerHTML = reviews.map(review => {
+            const safeId = escapeHTML(review._id);
+
+            return `
+            <tr>
+                <td>${escapeHTML(review.name)}</td>
+                <td>${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}</td>
+                <td>${escapeHTML(review.review)}</td>
+                <td>${new Date(review.createdAt).toLocaleDateString()}</td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="action-btn delete" onclick="deleteReview('${safeId}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+        }).join('');
+    } catch (error) {
+        console.error('Error loading reviews:', error);
+        document.getElementById('reviewsTable').innerHTML = '<tr><td colspan="5">Failed to load reviews</td></tr>';
+    }
+}
+
+// Delete Review
+async function deleteReview(id) {
+    if (!confirm('Are you sure you want to delete this review?')) return;
+
+    try {
+        await api.deleteReview(id);
+        alert('Review deleted successfully');
+        loadReviews();
+    } catch (error) {
+        console.error('Error deleting review:', error);
+        alert('Failed to delete review');
+    }
+}
+
+// Load Settings
+async function loadSettings() {
+    try {
+        const restaurant = await api.getRestaurant();
+
+        document.getElementById('restaurantName').value = restaurant.name || '';
+        document.getElementById('restaurantPhone').value = restaurant.phone || '';
+        document.getElementById('restaurantEmail').value = restaurant.email || '';
+        document.getElementById('restaurantAddress').value = restaurant.address?.fullAddress || '';
+        document.getElementById('restaurantHours').value = restaurant.openingHours || '';
+        document.getElementById('restaurantPriceRange').value = restaurant.priceRange || '';
+    } catch (error) {
+        console.error('Error loading settings:', error);
+    }
+}
+
+// Settings Form Submit
+document.getElementById('settingsForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const settingsData = {
+        name: document.getElementById('restaurantName').value,
+        phone: document.getElementById('restaurantPhone').value,
+        email: document.getElementById('restaurantEmail').value,
+        address: {
+            fullAddress: document.getElementById('restaurantAddress').value
+        },
+        openingHours: document.getElementById('restaurantHours').value,
+        priceRange: document.getElementById('restaurantPriceRange').value
+    };
+
+    try {
+        await api.updateRestaurant(settingsData);
+        alert('Settings saved successfully');
+    } catch (error) {
+        console.error('Error saving settings:', error);
+        alert('Failed to save settings');
+    }
+});
+
+
+==============================================
+FILE: ./backend/config/db.js
+==============================================
+const mongoose = require('mongoose');
+
+const connectDB = async () => {
+  try {
+    const conn = await mongoose.connect(process.env.MONGO_URI);
+    console.log(`MongoDB Connected: ${conn.connection.host}`);
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+    process.exit(1);
+  }
+};
+
+module.exports = connectDB;
+
+
+==============================================
+FILE: ./backend/controllers/authController.js
+==============================================
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const Admin = require('../models/Admin');
+
+const loginAdmin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({
+        message: 'Email and password are required'
+      });
+    }
+
+    const admin = await Admin
+      .findOne({ email: email.toLowerCase().trim() })
+      .select('+password');
+
+    if (!admin) {
+      return res.status(401).json({
+        message: 'Invalid email or password'
+      });
+    }
+
+    if (!admin.isActive) {
+      return res.status(403).json({
+        message: 'Admin account is disabled'
+      });
+    }
+
+    const passwordMatches = await bcrypt.compare(
+      password,
+      admin.password
+    );
+
+    if (!passwordMatches) {
+      return res.status(401).json({
+        message: 'Invalid email or password'
+      });
+    }
+
+    const token = jwt.sign(
+      {
+        id: admin._id.toString(),
+        role: admin.role
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: '1d'
+      }
+    );
+
+    res.cookie('adminToken', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 24 * 60 * 60 * 1000
+    });
+
+    res.json({
+      message: 'Login successful',
+      admin: {
+        id: admin._id,
+        name: admin.name,
+        email: admin.email,
+        role: admin.role
+      }
+    });
+  } catch (error) {
+    console.error('Admin login error:', error);
+
+    res.status(500).json({
+      message: 'Server error'
+    });
+  }
+};
+
+const logoutAdmin = (req, res) => {
+  res.clearCookie('adminToken', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax'
+  });
+
+  res.json({
+    message: 'Logout successful'
+  });
+};
+
+module.exports = {
+  loginAdmin,
+  logoutAdmin
+};
+
+==============================================
+FILE: ./backend/controllers/customerAuthController.js
+==============================================
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const Customer = require('../models/Customer');
+
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const registerCustomer = async (req, res) => {
+  try {
+    const { name, email, phone, password } = req.body;
+
+    if (!name || typeof name !== 'string' || name.trim().length < 2 || name.trim().length > 100) {
+      return res.status(400).json({ message: 'Name must be between 2 and 100 characters' });
+    }
+
+    if (!email || typeof email !== 'string' || !emailRegex.test(email.trim())) {
+      return res.status(400).json({ message: 'Valid email is required' });
+    }
+
+    if (!phone || typeof phone !== 'string' || !phone.trim() || phone.trim().length > 20) {
+      return res.status(400).json({ message: 'Valid phone number is required' });
+    }
+
+    if (!password || typeof password !== 'string' || password.length < 6) {
+      return res.status(400).json({ message: 'Password must be at least 6 characters' });
+    }
+
+    const normalizedEmail = email.toLowerCase().trim();
+    const existingCustomer = await Customer.findOne({ email: normalizedEmail });
+
+    if (existingCustomer) {
+      return res.status(409).json({ message: 'An account with this email already exists' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 12);
+    const customer = await Customer.create({
+      name: name.trim(),
+      email: normalizedEmail,
+      phone: phone.trim(),
+      password: hashedPassword
+    });
+
+    res.status(201).json({
+      message: 'Customer account created successfully',
+      customer: {
+        id: customer._id,
+        name: customer.name,
+        email: customer.email,
+        phone: customer.phone
+      }
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: 'Unable to create customer account',
+      ...(process.env.NODE_ENV === 'development' && { error: error.message })
+    });
+  }
+};
+
+const loginCustomer = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Email and password are required' });
+    }
+
+    const customer = await Customer
+      .findOne({ email: email.toLowerCase().trim() })
+      .select('+password');
+
+    if (!customer || !await bcrypt.compare(password, customer.password)) {
+      return res.status(401).json({ message: 'Invalid email or password' });
+    }
+
+    const token = jwt.sign(
+      { id: customer._id.toString(), role: 'customer' },
+      process.env.JWT_SECRET,
+      { expiresIn: '1d' }
+    );
+
+    res.cookie('customerToken', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 24 * 60 * 60 * 1000
+    });
+
+    res.json({
+      message: 'Login successful',
+      customer: {
+        id: customer._id,
+        name: customer.name,
+        email: customer.email,
+        phone: customer.phone
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+const logoutCustomer = (req, res) => {
+  res.clearCookie('customerToken', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax'
+  });
+
+  res.json({ message: 'Logout successful' });
+};
+
+const getCurrentCustomer = (req, res) => {
+  res.json({
+    customer: {
+      id: req.customer._id,
+      name: req.customer.name,
+      email: req.customer.email,
+      phone: req.customer.phone
+    }
+  });
+};
+
+module.exports = {
+  registerCustomer,
+  loginCustomer,
+  logoutCustomer,
+  getCurrentCustomer
+};
+
+
+==============================================
+FILE: ./backend/controllers/menuController.js
+==============================================
+const MenuItem = require('../models/MenuItem');
+const mongoose = require('mongoose');
+
+// @desc    Get all menu items
+// @route   GET /api/menu
+// @access  Public
+const getMenuItems = async (req, res) => {
+  try {
+    const { category, search, sort } = req.query;
+    
+    let query = { isAvailable: true };

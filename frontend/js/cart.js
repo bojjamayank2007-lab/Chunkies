@@ -125,7 +125,7 @@ function renderCart() {
     if (!cartItems && !checkoutCartItems) return;
 
     const cartHTML = cart.length === 0 
-        ? '<p class="empty-cart">Your cart is empty</p>'
+        ? '<div class="empty-cart"><p>Your cart is empty</p><a href="menu.html" class="btn btn-primary">Add Items from Menu</a></div>'
         : cart.map(item => `
             <div class="cart-item">
                 <div class="cart-item-image">
@@ -281,18 +281,31 @@ function setupCartDrawer() {
 // Show notification
 function showNotification(message) {
     const notification = document.createElement('div');
+    notification.className = 'cart-toast';
+    notification.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
     notification.style.cssText = `
         position: fixed;
-        bottom: 80px;
-        right: 20px;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%);
         background-color: var(--success-color);
-        color: white;
-        padding: 16px 24px;
-        border-radius: 8px;
-        z-index: 2000;
-        animation: slideIn 0.3s ease;
+        color: #fff;
+        padding: 12px 20px;
+        border-radius: 999px;
+        z-index: 5000;
+        font-size: 14px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+        animation: toastIn 0.25s ease, toastOut 0.25s ease 2.7s forwards;
+        max-width: 90vw;
+        width: max-content;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     `;
-    notification.textContent = message;
     document.body.appendChild(notification);
 
     setTimeout(() => {
@@ -348,7 +361,6 @@ function setupCheckoutForm() {
             })),
             orderType: formData.get('orderType'),
             address: formData.get('orderType') === 'Delivery' ? formData.get('address') : undefined,
-            tableNumber: formData.get('orderType') === 'Dine-in' ? formData.get('tableNumber') : undefined,
             paymentMethod: formData.get('paymentMethod'),
             notes: formData.get('notes') || ''
         };
@@ -357,6 +369,8 @@ function setupCheckoutForm() {
             const response = await api.createOrder(orderData);
 
             if (orderData.paymentMethod === 'COD') {
+                const receiptLink = document.getElementById('viewReceiptLink');
+                if (receiptLink) receiptLink.href = `receipt.html?id=${encodeURIComponent(response._id || '')}`;
                 document.getElementById('successOrderId').textContent = response.orderId || 'N/A';
                 document.getElementById('successPaymentStatus').textContent = 'Pending — Cash on Delivery';
                 document.getElementById('successModal').classList.add('active');
@@ -385,6 +399,8 @@ function setupCheckoutForm() {
                             signature: paymentResponse.razorpay_signature
                         });
 
+                        const receiptLink = document.getElementById('viewReceiptLink');
+                        if (receiptLink) receiptLink.href = `receipt.html?id=${encodeURIComponent(response._id || '')}`;
                         document.getElementById('successOrderId').textContent = response.orderId || 'N/A';
                         document.getElementById('successPaymentStatus').textContent = 'Paid';
                         document.getElementById('successModal').classList.add('active');
@@ -413,4 +429,24 @@ document.addEventListener('DOMContentLoaded', () => {
     renderCart();
     setupCartDrawer();
     setupCheckoutForm();
+    setupPaymentMethodToggle();
 });
+
+function setupPaymentMethodToggle() {
+    const codOption = document.getElementById('codOption');
+    const onlineOption = document.getElementById('onlineOption');
+    const counterOption = document.getElementById('counterOption');
+
+    if (!codOption || !onlineOption) return;
+
+    const allOptions = [codOption, onlineOption, counterOption].filter(Boolean);
+
+    allOptions.forEach(option => {
+        option.addEventListener('click', () => {
+            allOptions.forEach(o => o.classList.remove('active'));
+            option.classList.add('active');
+            const radio = option.querySelector('input');
+            if (radio) radio.checked = true;
+        });
+    });
+}

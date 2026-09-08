@@ -1,0 +1,500 @@
+    </section>
+
+    <!-- About Content -->
+    <section class="about-section">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-text">
+                    <h2>Your Go-To Spot for Serious Cravings</h2>
+                    <p>At CHUNKIES, we believe in big flavours and even bigger satisfaction. Located in the heart of Jogeshwari West, Mumbai, we're your destination for loaded burgers, crispy chicken, delicious wraps, and sides that hit the spot every time.</p>
+                    
+                    <p>Whether you're dining in, grabbing takeaway, or ordering delivery, we've got you covered with food that's made fresh and packed with flavour. From our signature Mexican Chicken Burger to our crispy Chicken Strips, every item on our menu is crafted to satisfy your cravings.</p>
+                    
+                    <p>We're open 24 hours, because hunger doesn't follow a schedule. Come visit us at Chunkies Shop on Swami Vivekanand Road, or order from the comfort of your home. Good food, great prices, and flavours that keep you coming back – that's the CHUNKIES promise.</p>
+                    
+                    <div class="about-highlights">
+                        <div class="highlight">
+                            <i class="fas fa-utensils"></i>
+                            <h3>Fast Food</h3>
+                            <p>Quick, delicious, and satisfying</p>
+                        </div>
+                        <div class="highlight">
+                            <i class="fas fa-fire"></i>
+                            <h3>Big Flavours</h3>
+                            <p>Bold tastes in every bite</p>
+                        </div>
+                        <div class="highlight">
+                            <i class="fas fa-wallet"></i>
+                            <h3>Affordable</h3>
+                            <p>Great food at great prices</p>
+                        </div>
+                        <div class="highlight">
+                            <i class="fas fa-clock"></i>
+                            <h3>24 Hours</h3>
+                            <p>Always open when you're hungry</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="about-image">
+                    <div class="image-placeholder">
+                        <i class="fas fa-hamburger"></i>
+                        <span>Food Gallery</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="services-section">
+        <div class="container">
+            <h2 class="section-title">OUR SERVICES</h2>
+            <div class="services-grid">
+                <div class="service-card">
+                    <i class="fas fa-chair"></i>
+                    <h3>Dine-in</h3>
+                    <p>Enjoy your meal in our comfortable seating area</p>
+                </div>
+                <div class="service-card">
+                    <i class="fas fa-shopping-bag"></i>
+                    <h3>Takeaway</h3>
+                    <p>Grab your food to go, quick and convenient</p>
+                </div>
+                <div class="service-card">
+                    <i class="fas fa-motorcycle"></i>
+                    <h3>Delivery</h3>
+                    <p>Get CHUNKIES delivered right to your doorstep</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>CHUNKIES</h3>
+                    <p class="footer-hindi">चुंकीज़</p>
+                    <p>Big flavour. Big chunkies.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="menu.html">Menu</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p><i class="fas fa-map-marker-alt"></i> Jogeshwari West, Mumbai</p>
+                    <p><i class="fas fa-phone"></i> 090040 94979</p>
+                    <p><i class="fas fa-clock"></i> Open 24 Hours</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Services</h4>
+                    <p>Dine-in</p>
+                    <p>Takeaway</p>
+                    <p>Delivery</p>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 CHUNKIES. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Cart Drawer -->
+    <div class="cart-overlay" id="cartOverlay"></div>
+    <div class="cart-drawer" id="cartDrawer">
+        <div class="cart-content">
+            <div class="cart-header">
+                <h3>Your Cart</h3>
+                <button class="cart-close" id="cartClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="cart-items" id="cartItems">
+                <p class="empty-cart">Your cart is empty</p>
+            </div>
+            <div class="cart-footer">
+                <div class="cart-total">
+                    <span>Total:</span>
+                    <span id="cartTotal">₹0</span>
+                </div>
+                <a href="cart.html" class="btn btn-primary btn-block">PROCEED TO CHECKOUT</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Sticky Buttons -->
+    <!-- JavaScript -->
+    <script src="js/api.js"></script>
+    <script src="js/customerAuth.js"></script>
+    <script src="js/navbar.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/restaurant.js"></script>
+
+
+
+</body>
+</html>
+
+
+==============================================
+FILE: ./frontend/cart.html
+==============================================
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout — CHUNKIES</title>
+    <meta name="description" content="Complete your order at CHUNKIES.">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/menu.css">
+    <link rel="stylesheet" href="css/footer.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="css/mobile-app.css">
+    <link rel="stylesheet" href="css/final-fixes.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="index.html">CHUNKIES</a>
+                <span class="nav-brand-hindi">चुंकीज़</span>
+            </div>
+            
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="index.html" class="nav-link">HOME</a></li>
+                <li><a href="menu.html" class="nav-link">MENU</a></li>
+                <li><a href="about.html" class="nav-link">ABOUT</a></li>
+                <li><a href="index.html#reviews" class="nav-link">REVIEWS</a></li>
+                <li><a href="contact.html" class="nav-link">CONTACT</a></li>
+            </ul>
+            
+            <div class="nav-actions">
+                <div id="navProfileAction" class="nav-profile-action"></div>
+                <button class="cart-btn" id="cartBtn">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count" id="cartCount">0</span>
+                </button>
+                <button class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Cart Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1>CHECKOUT</h1>
+            <p>Complete your order</p>
+        </div>
+    </section>
+
+    <!-- Checkout Section -->
+    <section class="checkout-section">
+        <div class="container">
+            <div class="checkout-grid">
+                <!-- Order Summary -->
+                <div class="order-summary">
+                    <h2>Your Order</h2>
+                    <div class="cart-items" id="checkoutCartItems">
+                        <p class="empty-cart">Your cart is empty</p>
+                    </div>
+                    
+                    <div class="order-totals">
+                        <div class="total-row">
+                            <span>Subtotal</span>
+                            <span id="checkoutSubtotal">₹0</span>
+                        </div>
+                        <div class="total-row">
+                            <span>Tax (5%)</span>
+                            <span id="checkoutTax">₹0</span>
+                        </div>
+                        <div class="total-row total">
+                            <span>Total</span>
+                            <span id="checkoutTotal">₹0</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Checkout Form -->
+                <div class="checkout-form">
+                    <h2>Delivery Details</h2>
+                    <form id="checkoutForm">
+                        <div class="form-group">
+                            <label for="customerName">Full Name *</label>
+                            <input type="text" id="customerName" name="customerName" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="phone">Mobile Number *</label>
+                            <input type="tel" id="phone" name="phone" required pattern="[0-9]{10}">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="orderType">Order Type *</label>
+                            <select id="orderType" name="orderType" required>
+                                <option value="">Select order type</option>
+                                <option value="Delivery">Delivery</option>
+                                <option value="Takeaway">Takeaway</option>
+                                <option value="Dine-in">Dine-in</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group" id="addressGroup" style="display: none;">
+                            <label for="address">Delivery Address *</label>
+                            <textarea id="address" name="address" rows="3"></textarea>
+                        </div>
+                        
+                        <div class="form-group" id="tableGroup" style="display: none;">
+                            <label for="tableNumber">Table Number *</label>
+                            <input type="text" id="tableNumber" name="tableNumber">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="notes">Special Instructions</label>
+                            <textarea id="notes" name="notes" rows="2" placeholder="Any special requests?"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Payment Method</label>
+                            <label><input type="radio" name="paymentMethod" value="COD" checked> Cash on Delivery</label>
+                            <label><input type="radio" name="paymentMethod" value="Online"> Pay Online</label>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-block btn-lg">PLACE ORDER</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Order Success Modal -->
+    <div class="modal" id="successModal">
+        <div class="modal-content">
+            <div class="modal-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h2>ORDER PLACED SUCCESSFULLY!</h2>
+            <p>Your order has been received.</p>
+            <p class="order-id">Order ID: <span id="successOrderId"></span></p>
+            <p class="order-message">Payment Status: <span id="successPaymentStatus"></span></p>
+            <p class="order-message">We'll prepare your order right away!</p>
+            <a href="index.html" class="btn btn-primary">BACK TO HOME</a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>CHUNKIES</h3>
+                    <p class="footer-hindi">चुंकीज़</p>
+                    <p>Big flavour. Big chunkies.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="menu.html">Menu</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p><i class="fas fa-map-marker-alt"></i> Jogeshwari West, Mumbai</p>
+                    <p><i class="fas fa-phone"></i> 090040 94979</p>
+                    <p><i class="fas fa-clock"></i> Open 24 Hours</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Services</h4>
+                    <p>Dine-in</p>
+                    <p>Takeaway</p>
+                    <p>Delivery</p>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 CHUNKIES. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Mobile Sticky Buttons -->
+    <!-- JavaScript -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/customerAuth.js"></script>
+    <script src="js/navbar.js"></script>
+    <script src="js/contact.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/restaurant.js"></script>
+
+
+
+</body>
+</html>
+
+
+==============================================
+FILE: ./frontend/contact.html
+==============================================
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact — CHUNKIES</title>
+    <meta name="description" content="Get in touch with CHUNKIES. Find our location, hours, and contact information.">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/menu.css">
+    <link rel="stylesheet" href="css/footer.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="css/mobile-app.css">
+    <link rel="stylesheet" href="css/final-fixes.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="index.html">CHUNKIES</a>
+                <span class="nav-brand-hindi">चुंकीज़</span>
+            </div>
+            
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="index.html" class="nav-link">HOME</a></li>
+                <li><a href="menu.html" class="nav-link">MENU</a></li>
+                <li><a href="about.html" class="nav-link">ABOUT</a></li>
+                <li><a href="index.html#reviews" class="nav-link">REVIEWS</a></li>
+                <li><a href="contact.html" class="nav-link active">CONTACT</a></li>
+            </ul>
+            
+            <div class="nav-actions">
+                <div id="navProfileAction" class="nav-profile-action"></div>
+                <button class="cart-btn" id="cartBtn">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count" id="cartCount">0</span>
+                </button>
+                <button class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contact Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1>COME GET YOUR CHUNKIES</h1>
+            <p>We're here 24 hours for your cravings</p>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact-section">
+        <div class="container">
+            <div class="contact-grid">
+                <div class="contact-info">
+                    <h2>Location & Hours</h2>
+                    
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                            <h3>Address</h3>
+                            <p>225, Swami Vivekanand Rd,<br>
+                            Collectors Colony,<br>
+                            Momin Nagar,<br>
+                            Jogeshwari West,<br>
+                            Mumbai, Maharashtra 400102</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <div>
+                            <h3>Phone</h3>
+                            <p>090040 94979</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <h3>Hours</h3>
+                            <p>Open 24 Hours</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-buttons">
+                        <a href="https://maps.google.com/?q=Chunkies+Shop+Jogeshwari+West+Mumbai" target="_blank" class="btn btn-primary">
+                            <i class="fas fa-directions"></i> GET DIRECTIONS
+                        </a>
+                        <a href="tel:09004094979" class="btn btn-secondary">
+                            <i class="fas fa-phone"></i> CALL NOW
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="contact-map">
+                    <div class="map-placeholder">
+                        <i class="fas fa-map-marked-alt"></i>
+                        <h3>Map</h3>
+                        <p>225, Swami Vivekanand Rd,<br>Jogeshwari West, Mumbai</p>
+                        <a href="https://maps.google.com/?q=Chunkies+Shop+Jogeshwari+West+Mumbai" target="_blank" class="btn btn-secondary">
+                            Open in Google Maps
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>CHUNKIES</h3>
+                    <p class="footer-hindi">चुंकीज़</p>
+                    <p>Big flavour. Big chunkies.</p>
+                </div>

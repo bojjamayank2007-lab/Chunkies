@@ -24,7 +24,7 @@ const seedData = async () => {
     // Create restaurant
     const restaurant = await Restaurant.create({
       name: 'CHUNKIES',
-      nameHindi: 'चुंकीज़',
+      nameHindi: 'चंकीज़',
       category: 'Fast Food Restaurant',
       address: {
         street: '225, Swami Vivekanand Rd',

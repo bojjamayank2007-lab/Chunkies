@@ -1,0 +1,500 @@
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="menu.html">Menu</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p><i class="fas fa-map-marker-alt"></i> Jogeshwari West, Mumbai</p>
+                    <p><i class="fas fa-phone"></i> 090040 94979</p>
+                    <p><i class="fas fa-clock"></i> Open 24 Hours</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Services</h4>
+                    <p>Dine-in</p>
+                    <p>Takeaway</p>
+                    <p>Delivery</p>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 CHUNKIES. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Cart Drawer -->
+    <div class="cart-overlay" id="cartOverlay"></div>
+    <div class="cart-drawer" id="cartDrawer">
+        <div class="cart-content">
+            <div class="cart-header">
+                <h3>Your Cart</h3>
+                <button class="cart-close" id="cartClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="cart-items" id="cartItems">
+                <p class="empty-cart">Your cart is empty</p>
+            </div>
+            <div class="cart-footer">
+                <div class="cart-total">
+                    <span>Total:</span>
+                    <span id="cartTotal">₹0</span>
+                </div>
+                <a href="cart.html" class="btn btn-primary btn-block">PROCEED TO CHECKOUT</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Sticky Buttons -->
+    <!-- JavaScript -->
+    <script src="js/api.js"></script>
+    <script src="js/customerAuth.js"></script>
+    <script src="js/navbar.js"></script>
+    <script src="js/menu.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/reviews.js"></script>
+    <script src="js/restaurant.js"></script>
+    <script src="js/main.js"></script>
+
+
+
+</body>
+</html>
+
+
+==============================================
+FILE: ./frontend/js/api.js
+==============================================
+// API Configuration
+const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+    ? 'http://localhost:5001/api'
+    : '/api';
+
+// Shared safe fetch helper
+// 1. Accepts same arguments as fetch
+// 2. Reads response.text() first
+// 3. Tries JSON.parse(text). If it fails, returns { message: text }
+// 4. Throws an Error with message when !response.ok
+async function safeFetch(url, options = {}) {
+    const response = await fetch(url, options);
+
+    const text = await response.text();
+    let data;
+    try {
+        data = text ? JSON.parse(text) : {};
+    } catch {
+        data = { message: text };
+    }
+
+    if (!response.ok) {
+        const error = new Error(data.message || data.error || `Request failed with status ${response.status}`);
+        error.status = response.status;
+        throw error;
+    }
+
+    return data;
+}
+
+const adminFetch = async (url, options = {}) => {
+    const response = await fetch(url, {
+        ...options,
+        credentials: 'include'
+    });
+
+    if (response.status === 401) {
+        window.dispatchEvent(new Event('admin-session-expired'));
+    }
+
+    return response;
+};
+
+// API Functions
+const api = {
+
+    // 🔐 Admin Authentication
+    loginAdmin: async (email, password) => {
+        return safeFetch(`${API_BASE_URL}/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ email, password })
+        });
+    },
+
+    logoutAdmin: async () => {
+        return safeFetch(`${API_BASE_URL}/auth/logout`, {
+            method: 'POST',
+            credentials: 'include'
+        });
+    },
+
+    // Menu
+    getMenu: async (params = {}) => {
+        const queryString = new URLSearchParams(params).toString();
+        const url = queryString
+            ? `${API_BASE_URL}/menu?${queryString}`
+            : `${API_BASE_URL}/menu`;
+
+        return safeFetch(url, { credentials: 'include' });
+    },
+
+    getMenuItemById: async (id) => {
+        return safeFetch(`${API_BASE_URL}/menu/${id}`, { credentials: 'include' });
+    },
+
+    createMenuItem: async (data) => {
+        return safeFetch(`${API_BASE_URL}/menu`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify(data)
+        });
+    },
+
+    updateMenuItem: async (id, data) => {
+        return safeFetch(`${API_BASE_URL}/menu/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify(data)
+        });
+    },
+
+    deleteMenuItem: async (id) => {
+        return safeFetch(`${API_BASE_URL}/menu/${id}`, {
+            method: 'DELETE',
+            credentials: 'include'
+        });
+    },
+
+    // Orders
+    getOrders: async () => {
+        return safeFetch(`${API_BASE_URL}/orders`, { credentials: 'include' });
+    },
+
+    getOrderById: async (id) => {
+        return safeFetch(`${API_BASE_URL}/orders/${id}`, { credentials: 'include' });
+    },
+
+    createOrder: async (data) => {
+        return safeFetch(`${API_BASE_URL}/orders`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify(data)
+        });
+    },
+
+    verifyPayment: async (data) => {
+        return safeFetch(`${API_BASE_URL}/orders/verify-payment`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+    },
+
+    updateOrder: async (id, data) => {
+        return safeFetch(`${API_BASE_URL}/orders/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify(data)
+        });
+    },
+
+    deleteOrder: async (id) => {
+        return safeFetch(`${API_BASE_URL}/orders/${id}`, {
+            method: 'DELETE',
+            credentials: 'include'
+        });
+    },
+
+    // Reviews
+    getReviews: async () => {
+        return safeFetch(`${API_BASE_URL}/reviews`, { credentials: 'include' });
+    },
+
+    createReview: async (data) => {
+        return safeFetch(`${API_BASE_URL}/reviews`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify(data)
+        });
+    },
+
+    deleteReview: async (id) => {
+        return safeFetch(`${API_BASE_URL}/reviews/${id}`, {
+            method: 'DELETE',
+            credentials: 'include'
+        });
+    },
+
+    // Restaurant
+    getRestaurant: async () => {
+        return safeFetch(`${API_BASE_URL}/restaurant`, { credentials: 'include' });
+    },
+
+    updateRestaurant: async (data) => {
+        return safeFetch(`${API_BASE_URL}/restaurant`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify(data)
+        });
+    }
+};
+
+==============================================
+FILE: ./frontend/js/cart.js
+==============================================
+// Cart functionality
+let cart = [];
+let savedScrollY = 0;
+
+// Safe localStorage load with corruption protection
+function loadCart() {
+    try {
+        const savedCart = localStorage.getItem('chunkiesCart');
+        if (savedCart) {
+            const parsedCart = JSON.parse(savedCart);
+            // Validate cart structure
+            if (Array.isArray(parsedCart)) {
+                cart = parsedCart.filter(item => 
+                    item && 
+                    typeof item.id === 'string' &&
+                    typeof item.name === 'string' &&
+                    typeof item.price === 'number' &&
+                    typeof item.quantity === 'number' &&
+                    item.quantity > 0
+                );
+            } else {
+                cart = [];
+            }
+        }
+    } catch (error) {
+        console.error('Cart data corrupted, resetting:', error);
+        cart = [];
+        localStorage.removeItem('chunkiesCart');
+    }
+}
+
+// Save cart to localStorage
+function saveCart() {
+    try {
+        localStorage.setItem('chunkiesCart', JSON.stringify(cart));
+        updateCartCount();
+    } catch (error) {
+        console.error('Failed to save cart:', error);
+    }
+}
+
+// Update cart count
+function updateCartCount() {
+    const cartCount = document.getElementById('cartCount');
+    if (cartCount) {
+        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+        cartCount.textContent = totalItems;
+    }
+}
+
+// Add to cart
+function addToCart(id, name, price) {
+    if (!window.isCustomerLoggedIn) {
+        if (typeof promptLoginForCart === 'function') {
+            promptLoginForCart();
+        }
+        return;
+    }
+
+    const existingItem = cart.find(item => item.id === id);
+    
+    if (existingItem) {
+        existingItem.quantity += 1;
+    } else {
+        cart.push({
+            id,
+            name,
+            price,
+            quantity: 1
+        });
+    }
+    
+    saveCart();
+    renderCart();
+    
+    // Show notification
+    showNotification(`${name} added to cart!`);
+}
+
+// Remove from cart
+function removeFromCart(id) {
+    cart = cart.filter(item => item.id !== id);
+    saveCart();
+    renderCart();
+}
+
+// Clear cart
+function clearCart() {
+    cart = [];
+    saveCart();
+    renderCart();
+    showNotification('Cart cleared');
+}
+
+// Update quantity
+function updateQuantity(id, change) {
+    const item = cart.find(item => item.id === id);
+    if (item) {
+        const newQuantity = item.quantity + change;
+        // Prevent negative quantities
+        if (newQuantity <= 0) {
+            removeFromCart(id);
+        } else {
+            item.quantity = newQuantity;
+            saveCart();
+            renderCart();
+        }
+    }
+}
+
+// Calculate total
+function calculateTotal() {
+    return cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+}
+
+// Render cart
+function renderCart() {
+    const cartItems = document.getElementById('cartItems');
+    const cartTotal = document.getElementById('cartTotal');
+    const checkoutCartItems = document.getElementById('checkoutCartItems');
+    const checkoutSubtotal = document.getElementById('checkoutSubtotal');
+    const checkoutTax = document.getElementById('checkoutTax');
+    const checkoutTotal = document.getElementById('checkoutTotal');
+
+    if (!cartItems && !checkoutCartItems) return;
+
+    const cartHTML = cart.length === 0 
+        ? '<p class="empty-cart">Your cart is empty</p>'
+        : cart.map(item => `
+            <div class="cart-item">
+                <div class="cart-item-image">
+                    <i class="fas fa-utensils"></i>
+                </div>
+                <div class="cart-item-details">
+                    <div class="cart-item-name">${item.name}</div>
+                    <div class="cart-item-price">₹${item.price}</div>
+                    <div class="cart-item-quantity">
+                        <button class="quantity-btn" onclick="updateQuantity('${item.id}', -1)">-</button>
+                        <span>${item.quantity}</span>
+                        <button class="quantity-btn" onclick="updateQuantity('${item.id}', 1)">+</button>
+                    </div>
+                </div>
+                <button class="cart-item-remove" onclick="removeFromCart('${item.id}')">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        `).join('') + (cart.length > 0 ? '<button class="btn btn-secondary btn-block" style="margin-top: 16px;" onclick="clearCart()">Clear Cart</button>' : '');
+
+    if (cartItems) {
+        cartItems.innerHTML = cartHTML;
+    }
+
+    if (checkoutCartItems) {
+        checkoutCartItems.innerHTML = cartHTML;
+    }
+
+    const total = calculateTotal();
+    const tax = Math.round(total * 0.05);
+    const finalTotal = total + tax;
+
+    if (cartTotal) {
+        cartTotal.textContent = `₹${finalTotal}`;
+    }
+
+    if (checkoutSubtotal) {
+        checkoutSubtotal.textContent = `₹${total}`;
+    }
+
+    if (checkoutTax) {
+        checkoutTax.textContent = `₹${tax}`;
+    }
+
+    if (checkoutTotal) {
+        checkoutTotal.textContent = `₹${finalTotal}`;
+    }
+
+    // Update checkout button state
+    updateCheckoutButton();
+}
+
+// Lock page scroll
+function lockPageScroll() {
+    savedScrollY = window.scrollY;
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${savedScrollY}px`;
+    document.body.style.left = '0';
+    document.body.style.right = '0';
+    document.body.style.width = '100%';
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+}
+
+// Unlock page scroll
+function unlockPageScroll() {
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+    document.body.style.right = '';
+    document.body.style.width = '';
+    document.body.style.overflow = '';
+    document.documentElement.style.overflow = '';
+    window.scrollTo(0, savedScrollY);
+}
+
+// Prevent background wheel events when cart is open
+function preventBackgroundWheel(event) {
+    const cartDrawer = document.getElementById('cartDrawer');
+    const cartItems = document.getElementById('cartItems');
+    
+    if (!cartDrawer || !cartDrawer.classList.contains('active')) return;
+    
+    // Allow scrolling inside cart items
+    if (cartItems && cartItems.contains(event.target)) return;
+    
+    // Prevent scrolling outside cart
+    event.preventDefault();
+}
+
+// Cart drawer toggle
+function setupCartDrawer() {
+    const cartBtn = document.getElementById('cartBtn');
+    const cartDrawer = document.getElementById('cartDrawer');
+    const cartOverlay = document.getElementById('cartOverlay');
+    const cartClose = document.getElementById('cartClose');
+
+    if (!cartBtn || !cartDrawer) return;
+
+    cartBtn.addEventListener('click', () => {
+        if (!window.isCustomerLoggedIn) {
+            if (typeof promptLoginForCart === 'function') {
+                promptLoginForCart();
+            }
+            return;
+        }
+
+        cartDrawer.classList.add('active');
+        cartOverlay.classList.add('active');
+        lockPageScroll();
+        document.addEventListener('wheel', preventBackgroundWheel, { passive: false });
+    });
+
+    function closeCart() {
+        cartDrawer.classList.remove('active');
+        cartOverlay.classList.remove('active');
