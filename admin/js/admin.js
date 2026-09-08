@@ -66,7 +66,11 @@ document.addEventListener('DOMContentLoaded', () => {
         loginButton.textContent = 'Logging in...';
 
         try {
-            await api.loginAdmin(email, password);
+            const result = await api.loginAdmin(email, password);
+
+            if (result.token) {
+                localStorage.setItem('adminToken', result.token);
+            }
 
             showAdminApp();
             setupLogout();
@@ -160,6 +164,8 @@ function setupLogout() {
             console.error('Logout error:', error);
 
         } finally {
+            localStorage.removeItem('adminToken');
+
             showLoginScreen();
 
             const loginForm = document.getElementById('loginForm');

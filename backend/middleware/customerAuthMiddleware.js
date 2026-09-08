@@ -3,7 +3,13 @@ const Customer = require('../models/Customer');
 
 const authenticateCustomer = async (req, res, next, allowGuest = false) => {
   try {
-    const token = req.cookies.customerToken;
+    // Accept token from cookie (same-site) or Authorization header (cross-site)
+    const cookieToken = req.cookies.customerToken;
+    const authHeader = req.headers.authorization;
+    let token = cookieToken;
+    if (!token && authHeader && authHeader.startsWith('Bearer ')) {
+      token = authHeader.slice(7);
+    }
 
     if (!token) {
       if (allowGuest) return next();

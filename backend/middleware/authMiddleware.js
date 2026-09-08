@@ -2,7 +2,13 @@ const jwt = require('jsonwebtoken');
 
 const protect = (req, res, next) => {
   try {
-    const token = req.cookies.adminToken;
+    // Accept token from cookie (same-site) or Authorization header (cross-site)
+    const cookieToken = req.cookies.adminToken;
+    const authHeader = req.headers.authorization;
+    let token = cookieToken;
+    if (!token && authHeader && authHeader.startsWith('Bearer ')) {
+      token = authHeader.slice(7);
+    }
 
     if (!token) {
       return res.status(401).json({

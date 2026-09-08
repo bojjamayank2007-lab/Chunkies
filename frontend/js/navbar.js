@@ -62,6 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (profileLogoutBtn) {
                         profileLogoutBtn.addEventListener('click', async () => {
                             await logoutCustomer();
+                            localStorage.removeItem('customerToken');
                             window.isCustomerLoggedIn = false;
                             window.currentCustomer = null;
                             window.location.reload();

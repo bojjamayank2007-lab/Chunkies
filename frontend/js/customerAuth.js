@@ -7,6 +7,7 @@ async function customerRequest(path, options = {}) {
         ...options,
         headers: {
             'Content-Type': 'application/json',
+            ...(getCustomerToken() ? { Authorization: 'Bearer ' + getCustomerToken() } : {}),
             ...(options.headers || {})
         },
         credentials: 'include'
@@ -33,7 +34,10 @@ async function logoutCustomer() {
 
 async function getCustomer() {
     try {
-        const data = await safeFetch(`${customerApiBase}/me`, { credentials: 'include' });
+        const data = await safeFetch(`${customerApiBase}/me`, {
+            credentials: 'include',
+            headers: getCustomerToken() ? { Authorization: 'Bearer ' + getCustomerToken() } : {}
+        });
 
         if (!data.customer) {
             window.isCustomerLoggedIn = false;
@@ -104,7 +108,10 @@ function promptLoginForCart() {
 }
 
 async function fetchMyOrders() {
-    return safeFetch(`${API_BASE_URL}/orders/my-orders`, { credentials: 'include' });
+    return safeFetch(`${API_BASE_URL}/orders/my-orders`, {
+        credentials: 'include',
+        headers: getCustomerToken() ? { Authorization: 'Bearer ' + getCustomerToken() } : {}
+    });
 }
 
 function setFormMessage(elementId, message, isError = false) {
@@ -127,6 +134,9 @@ function setupCustomerAuthForms() {
 
             try {
                 const result = await loginCustomer(formData.get('email'), formData.get('password'));
+                if (result.token) {
+                    localStorage.setItem('customerToken', result.token);
+                }
                 window.isCustomerLoggedIn = true;
                 window.currentCustomer = result.customer;
                 window.location.href = getPostAuthRedirect();
@@ -151,6 +161,9 @@ function setupCustomerAuthForms() {
                 };
                 await registerCustomer(customerData);
                 const result = await loginCustomer(customerData.email, customerData.password);
+                if (result.token) {
+                    localStorage.setItem('customerToken', result.token);
+                }
                 window.isCustomerLoggedIn = true;
                 window.currentCustomer = result.customer;
                 window.location.href = getPostAuthRedirect();
@@ -320,6 +333,7 @@ async function loadCustomerOrders() {
             try {
                 await logoutCustomer();
             } finally {
+                localStorage.removeItem('customerToken');
                 window.location.href = 'customer-login.html';
             }
         });

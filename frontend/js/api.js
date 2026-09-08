@@ -40,6 +40,15 @@ function escapeHTML(value) {
         .replace(/'/g, '&#039;');
 }
 
+// Shared token helpers (Authorization header fallback for cross-site auth)
+function getAdminToken() {
+    return localStorage.getItem('adminToken');
+}
+
+function getCustomerToken() {
+    return localStorage.getItem('customerToken');
+}
+
 // API Functions
 const api = {
 
@@ -47,7 +56,10 @@ const api = {
     loginAdmin: async (email, password) => {
         return safeFetch(`${API_BASE_URL}/auth/login`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                ...(getAdminToken() ? { Authorization: 'Bearer ' + getAdminToken() } : {})
+            },
             credentials: 'include',
             body: JSON.stringify({ email, password })
         });
@@ -56,6 +68,7 @@ const api = {
     logoutAdmin: async () => {
         return safeFetch(`${API_BASE_URL}/auth/logout`, {
             method: 'POST',
+            headers: getAdminToken() ? { Authorization: 'Bearer ' + getAdminToken() } : {},
             credentials: 'include'
         });
     },
@@ -73,7 +86,10 @@ const api = {
     createMenuItem: async (data) => {
         return safeFetch(`${API_BASE_URL}/menu`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                ...(getAdminToken() ? { Authorization: 'Bearer ' + getAdminToken() } : {})
+            },
             credentials: 'include',
             body: JSON.stringify(data)
         });
@@ -82,7 +98,10 @@ const api = {
     updateMenuItem: async (id, data) => {
         return safeFetch(`${API_BASE_URL}/menu/${id}`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                ...(getAdminToken() ? { Authorization: 'Bearer ' + getAdminToken() } : {})
+            },
             credentials: 'include',
             body: JSON.stringify(data)
         });
@@ -91,27 +110,40 @@ const api = {
     deleteMenuItem: async (id) => {
         return safeFetch(`${API_BASE_URL}/menu/${id}`, {
             method: 'DELETE',
+            headers: getAdminToken() ? { Authorization: 'Bearer ' + getAdminToken() } : {},
             credentials: 'include'
         });
     },
 
     // Orders
     getOrders: async () => {
-        return safeFetch(`${API_BASE_URL}/orders`, { credentials: 'include' });
+        return safeFetch(`${API_BASE_URL}/orders`, {
+            credentials: 'include',
+            headers: getAdminToken() ? { Authorization: 'Bearer ' + getAdminToken() } : {}
+        });
     },
 
     getOrderById: async (id) => {
-        return safeFetch(`${API_BASE_URL}/orders/${id}`, { credentials: 'include' });
+        return safeFetch(`${API_BASE_URL}/orders/${id}`, {
+            credentials: 'include',
+            headers: getAdminToken() ? { Authorization: 'Bearer ' + getAdminToken() } : {}
+        });
     },
 
     getMyOrderById: async (id) => {
-        return safeFetch(`${API_BASE_URL}/orders/my-orders/${id}`, { credentials: 'include' });
+        return safeFetch(`${API_BASE_URL}/orders/my-orders/${id}`, {
+            credentials: 'include',
+            headers: getCustomerToken() ? { Authorization: 'Bearer ' + getCustomerToken() } : {}
+        });
     },
 
     createOrder: async (data) => {
         return safeFetch(`${API_BASE_URL}/orders`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                ...(getCustomerToken() ? { Authorization: 'Bearer ' + getCustomerToken() } : {})
+            },
             credentials: 'include',
             body: JSON.stringify(data)
         });
@@ -128,7 +160,10 @@ const api = {
     updateOrder: async (id, data) => {
         return safeFetch(`${API_BASE_URL}/orders/${id}`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                ...(getAdminToken() ? { Authorization: 'Bearer ' + getAdminToken() } : {})
+            },
             credentials: 'include',
             body: JSON.stringify(data)
         });
@@ -137,6 +172,7 @@ const api = {
     deleteOrder: async (id) => {
         return safeFetch(`${API_BASE_URL}/orders/${id}`, {
             method: 'DELETE',
+            headers: getAdminToken() ? { Authorization: 'Bearer ' + getAdminToken() } : {},
             credentials: 'include'
         });
     },
@@ -158,6 +194,7 @@ const api = {
     deleteReview: async (id) => {
         return safeFetch(`${API_BASE_URL}/reviews/${id}`, {
             method: 'DELETE',
+            headers: getAdminToken() ? { Authorization: 'Bearer ' + getAdminToken() } : {},
             credentials: 'include'
         });
     },
@@ -170,7 +207,10 @@ const api = {
     updateRestaurant: async (data) => {
         return safeFetch(`${API_BASE_URL}/restaurant`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                ...(getAdminToken() ? { Authorization: 'Bearer ' + getAdminToken() } : {})
+            },
             credentials: 'include',
             body: JSON.stringify(data)
         });
