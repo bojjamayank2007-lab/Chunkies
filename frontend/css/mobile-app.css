@@ -610,3 +610,19 @@
     text-align: center !important;
   }
 }
+
+/* Center button text vertically on mobile */
+@media (max-width: 480px) {
+  html body .btn,
+  html body .nav-login-btn,
+  html body .hero-buttons .btn,
+  html body .contact-buttons .btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    line-height: 1.2 !important;
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+    text-align: center !important;
+  }
+}
